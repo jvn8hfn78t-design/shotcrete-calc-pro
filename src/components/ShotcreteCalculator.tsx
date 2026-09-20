@@ -1,16 +1,25 @@
 import { useMemo, useState } from "react";
-import { ClipboardCopy, RotateCcw, Check } from "lucide-react";
+import { ClipboardCopy, RotateCcw, Check, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 // ---- Constantes de cálculo (ajustables según contrato) ----
 const ESPESOR_PULGADA_M = 0.0254; // 1" en metros
 const SH = 1.4594; // Factor de sacrificio
-const TASA_CONTRACTUAL = 0.02916667; // m³ por m² (V_base) — verificado: 48 m² -> 1.400 m³
+const TASA_CONTRACTUAL = 0.02916667; // m³ por m² (V_base) — verificado: 48 m² -> V_base 1.400 -> Contrato 1.600 m³
 const SOBREESPESOR_CONTRACTUAL = 0.2; // m³ adicionales
-const FC = 1; // Factor de espaciamiento de calibradores (avance, H <= 4.2)
 const RESANE_RENDIMIENTO = 11.5; // m² por m³
+const FC_DEFAULT = 0.85; // Espaciamiento de calibradores — P=12 -> 20 und
+
+// Rangos razonables para labores subterráneas
+const RANGES = {
+  h: { min: 0.5, max: 15, label: "Altura (H)" },
+  a: { min: 0.5, max: 20, label: "Ancho (A)" },
+  l: { min: 0.1, max: 50, label: "Avance (L)" },
+  p: { min: 1, max: 60, label: "Perímetro (P)" },
+} as const;
 
 type Mode = "avance" | "resane";
+type FieldKey = keyof typeof RANGES;
 
 function parse(v: string): number {
   const n = parseFloat(v.replace(",", "."));
@@ -19,17 +28,26 @@ function parse(v: string): number {
 
 const fmt = (n: number, d = 3) =>
   n.toLocaleString("es-PE", { minimumFractionDigits: d, maximumFractionDigits: d });
-const fmt2 = (n: number) =>
-  n.toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmt2 = (n: number) => fmt(n, 2);
 
-interface FieldProps {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
+function fieldError(key: FieldKey, raw: string): string | null {
+  if (raw.trim() === "") return null; // vacío: sin error inline, simplemente no hay cálculo
+  const v = parse(raw);
+  const { min, max, label } = RANGES[key];
+  if (!(v > 0)) return `${label} debe ser mayor que 0`;
+  if (v < min || v > max) return `${label}: rango permitido ${min} – ${max} m`;
+  return null;
 }
 
-function Field({ label, value, onChange, placeholder }: FieldProps) {
+interface FieldProps {
+  fieldKey: FieldKey;
+  value: string;
+  onChange: (v: string) => void;
+}
+
+function Field({ fieldKey, value, onChange }: FieldProps) {
+  const { label } = RANGES[fieldKey];
+  const error = fieldError(fieldKey, value);
   return (
     <label className="block">
       <span className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -41,10 +59,18 @@ function Field({ label, value, onChange, placeholder }: FieldProps) {
         min="0"
         step="any"
         value={value}
-        placeholder={placeholder ?? "0.00"}
+        placeholder="0.00"
+        aria-invalid={!!error}
         onChange={(e) => onChange(e.target.value)}
-        className="h-16 w-full rounded-lg border-2 border-input bg-secondary px-4 text-3xl font-bold tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground/40 focus:border-primary"
+        className={`h-16 w-full rounded-lg border-2 bg-secondary px-4 text-3xl font-bold tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground/40 ${
+          error ? "border-destructive" : "border-input focus:border-primary"
+        }`}
       />
+      {error && (
+        <span className="mt-1.5 flex items-center gap-1.5 text-xs font-semibold text-destructive">
+          <AlertTriangle className="size-3.5 shrink-0" /> {error}
+        </span>
+      )}
     </label>
   );
 }
@@ -63,9 +89,7 @@ function ResultCard({
   return (
     <div
       className={`rounded-xl border-2 p-4 sm:p-5 ${
-        highlight
-          ? "border-primary bg-primary/10"
-          : "border-border bg-secondary"
+        highlight ? "border-primary bg-primary/10" : "border-border bg-secondary"
       }`}
     >
       <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
@@ -85,7 +109,27 @@ export function ShotcreteCalculator() {
   const [a, setA] = useState("");
   const [l, setL] = useState("");
   const [perimetro, setPerimetro] = useState("12");
+  const [fc, setFc] = useState(String(FC_DEFAULT));
   const [copied, setCopied] = useState(false);
+
+  const errors = useMemo(() => {
+    const list: string[] = [];
+    const eH = fieldError("h", h);
+    const eL = fieldError("l", l);
+    if (eH) list.push(eH);
+    if (eL) list.push(eL);
+    if (mode === "avance") {
+      const eA = fieldError("a", a);
+      if (eA) list.push(eA);
+    } else {
+      const eP = fieldError("p", perimetro);
+      if (eP) list.push(eP);
+    }
+    return list;
+  }, [mode, h, a, l, perimetro]);
+
+  const inputsComplete = mode === "avance" ? h && a && l : h && l;
+  const valid = !!inputsComplete && errors.length === 0;
 
   const r = useMemo(() => {
     const H = parse(h);
@@ -98,50 +142,49 @@ export function ShotcreteCalculator() {
       const vContract = area > 0 ? vBase + SOBREESPESOR_CONTRACTUAL : 0;
       const vReal1 = area * ESPESOR_PULGADA_M * SH;
       const vReal2 = vReal1 * 2;
+      const Fc = parse(fc) || FC_DEFAULT;
       const calib =
-        H <= 0
-          ? 0
-          : H > 4.2
-            ? (H - 1) * 2 * 2
-            : Math.ceil(P * FC - 1) * 2;
-      return { P, area, vContract, vReal1, vReal2, calib };
+        H <= 0 ? 0 : H > 4.2 ? Math.round((H - 1) * 2 * 2) : Math.ceil(P * Fc - 1) * 2;
+      return { P, area, vBase, vContract, vReal1, vReal2, calib };
     }
     const area = H * L;
     const vResane = area / RESANE_RENDIMIENTO;
     const filas = H < 1.9 ? 1 : Math.floor(H);
     const calib = H <= 0 || L <= 0 ? 0 : filas * Math.ceil(Math.max(L - 1, 0));
     return { P: parse(perimetro), area, vResane, calib, filas };
-  }, [mode, h, a, l, perimetro]);
+  }, [mode, h, a, l, perimetro, fc]);
 
-  const hasInput = mode === "avance" ? h || a || l : h || l;
+  const shown = valid ? r : null;
 
   const reset = () => {
     setH("");
     setA("");
     setL("");
     setPerimetro("12");
+    setFc(String(FC_DEFAULT));
     toast.success("Campos limpiados");
   };
 
   const copyReport = async () => {
+    if (!shown) return;
     const lines =
       mode === "avance"
         ? [
             "REPORTE SHOTCRETE — MODO AVANCE",
-            `Altura (H): ${h || 0} m | Ancho (A): ${a || 0} m | Avance (L): ${l || 0} m`,
-            `Perímetro: ${fmt2(r.P)} m`,
-            `Área: ${fmt2(r.area)} m²`,
-            `Volumen contractual: ${fmt(r.vContract ?? 0)} m³`,
-            `Volumen real 1": ${fmt(r.vReal1 ?? 0)} m³`,
-            `Volumen real 2": ${fmt(r.vReal2 ?? 0)} m³`,
-            `Calibradores: ${r.calib} und`,
+            `H: ${h} m | A: ${a} m | L: ${l} m`,
+            `Perímetro: ${fmt2(shown.P)} m`,
+            `Área: ${fmt2(shown.area)} m²`,
+            `Volumen contractual: ${fmt(shown.vContract ?? 0)} m³`,
+            `Volumen real 1": ${fmt(shown.vReal1 ?? 0)} m³`,
+            `Volumen real 2": ${fmt(shown.vReal2 ?? 0)} m³`,
+            `Calibradores: ${shown.calib} und`,
           ]
         : [
             "REPORTE SHOTCRETE — MODO RESANE",
-            `Altura (H): ${h || 0} m | Avance (L): ${l || 0} m | Perímetro: ${perimetro || 12} m`,
-            `Área: ${fmt2(r.area)} m²`,
-            `Volumen de resane: ${fmt2(r.vResane ?? 0)} m³`,
-            `Calibradores: ${r.calib} und`,
+            `H: ${h} m | L: ${l} m | P: ${perimetro || 12} m`,
+            `Área: ${fmt2(shown.area)} m²`,
+            `Volumen de resane: ${fmt2(shown.vResane ?? 0)} m³`,
+            `Calibradores: ${shown.calib} und`,
           ];
     try {
       await navigator.clipboard.writeText(lines.join("\n"));
@@ -175,22 +218,42 @@ export function ShotcreteCalculator() {
       </div>
 
       {/* Inputs */}
-      <div className="grid gap-4 px-4 pb-4 sm:grid-cols-3 sm:px-6 sm:pb-6">
-        <Field label="Altura (H)" value={h} onChange={setH} />
+      <div className="grid gap-4 px-4 pb-2 sm:grid-cols-3 sm:px-6">
+        <Field fieldKey="h" value={h} onChange={setH} />
         {mode === "avance" ? (
-          <Field label="Ancho (A)" value={a} onChange={setA} />
+          <Field fieldKey="a" value={a} onChange={setA} />
         ) : (
-          <Field label="Perímetro (P)" value={perimetro} onChange={setPerimetro} />
+          <Field fieldKey="p" value={perimetro} onChange={setPerimetro} />
         )}
-        <Field label="Avance (L)" value={l} onChange={setL} />
-        <div className="flex items-end gap-2 sm:col-span-1">
-          <button
-            onClick={reset}
-            className="flex h-14 flex-1 items-center justify-center gap-2 rounded-lg border-2 border-input bg-transparent font-bold uppercase tracking-wide text-muted-foreground transition-colors hover:border-destructive hover:text-destructive"
-          >
-            <RotateCcw className="size-5" /> Limpiar
-          </button>
+        <Field fieldKey="l" value={l} onChange={setL} />
+      </div>
+
+      {mode === "avance" && (
+        <div className="flex items-center gap-3 px-4 pb-2 sm:px-6">
+          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            Factor Fc (calibradores)
+          </label>
+          <input
+            type="number"
+            inputMode="decimal"
+            step="0.05"
+            min="0.1"
+            max="2"
+            value={fc}
+            onChange={(e) => setFc(e.target.value)}
+            className="h-10 w-24 rounded-md border-2 border-input bg-secondary px-3 text-center font-bold tabular-nums text-foreground outline-none focus:border-primary"
+          />
+          <span className="text-xs text-muted-foreground">estándar: {FC_DEFAULT}</span>
         </div>
+      )}
+
+      <div className="px-4 pb-4 pt-2 sm:px-6 sm:pb-6">
+        <button
+          onClick={reset}
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-lg border-2 border-input bg-transparent font-bold uppercase tracking-wide text-muted-foreground transition-colors hover:border-destructive hover:text-destructive sm:w-auto sm:px-8"
+        >
+          <RotateCcw className="size-5" /> Limpiar
+        </button>
       </div>
 
       {/* Results */}
@@ -198,22 +261,39 @@ export function ShotcreteCalculator() {
         <p className="mb-4 text-xs font-bold uppercase tracking-[0.25em] text-muted-foreground">
           Resultados en tiempo real
         </p>
+
+        {!valid && (
+          <p className="mb-4 rounded-lg border border-border bg-secondary px-4 py-3 text-sm text-muted-foreground">
+            {errors.length > 0
+              ? "Corrige los valores marcados para calcular."
+              : "Ingresa las medidas de la labor para ver los resultados al instante."}
+          </p>
+        )}
+
         {mode === "avance" ? (
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-            <ResultCard label="Perímetro" value={fmt2(r.P)} unit="m" />
-            <ResultCard label="Área" value={fmt2(r.area)} unit="m²" />
-            <ResultCard label="Vol. contractual" value={fmt(r.vContract ?? 0)} unit="m³" highlight />
-            <ResultCard label='Vol. real 1"' value={fmt(r.vReal1 ?? 0)} unit="m³" highlight />
-            <ResultCard label='Vol. real 2"' value={fmt(r.vReal2 ?? 0)} unit="m³" highlight />
-            <ResultCard label="Calibradores" value={`${r.calib}`} unit="und" highlight />
+            <ResultCard label="Perímetro" value={fmt2(shown?.P ?? 0)} unit="m" />
+            <ResultCard label="Área" value={fmt2(shown?.area ?? 0)} unit="m²" />
+            <ResultCard label="Vol. contractual" value={fmt(shown?.vContract ?? 0)} unit="m³" highlight />
+            <ResultCard label='Vol. real 1"' value={fmt(shown?.vReal1 ?? 0)} unit="m³" highlight />
+            <ResultCard label='Vol. real 2"' value={fmt(shown?.vReal2 ?? 0)} unit="m³" highlight />
+            <ResultCard label="Calibradores" value={`${shown?.calib ?? 0}`} unit="und" highlight />
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-            <ResultCard label="Perímetro" value={fmt2(r.P)} unit="m" />
-            <ResultCard label="Área" value={fmt2(r.area)} unit="m²" />
-            <ResultCard label="Vol. resane" value={fmt2(r.vResane ?? 0)} unit="m³" highlight />
-            <ResultCard label="Calibradores" value={`${r.calib}`} unit="und" highlight />
+            <ResultCard label="Perímetro" value={fmt2(shown?.P ?? 0)} unit="m" />
+            <ResultCard label="Área" value={fmt2(shown?.area ?? 0)} unit="m²" />
+            <ResultCard label="Vol. resane" value={fmt2(shown?.vResane ?? 0)} unit="m³" highlight />
+            <ResultCard label="Calibradores" value={`${shown?.calib ?? 0}`} unit="und" highlight />
           </div>
+        )}
+
+        {mode === "avance" && shown && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Desglose: V_base = Área × {TASA_CONTRACTUAL.toFixed(5)} = {fmt(shown.vBase ?? 0)} m³ ·
+            Contrato = V_base + {SOBREESPESOR_CONTRACTUAL.toFixed(2)} m³ · Real 1" = Área × 0.0254 ×
+            SH({SH}) · Real 2" = 2 × Real 1"
+          </p>
         )}
 
         {/* Verification table */}
@@ -229,42 +309,42 @@ export function ShotcreteCalculator() {
             <tbody className="tabular-nums">
               <tr className="border-t border-border">
                 <td className="px-4 py-2.5">Perímetro</td>
-                <td className="px-4 py-2.5 text-right font-bold">{fmt2(r.P)}</td>
+                <td className="px-4 py-2.5 text-right font-bold">{fmt2(shown?.P ?? 0)}</td>
                 <td className="px-4 py-2.5 text-right text-muted-foreground">m</td>
               </tr>
               <tr className="border-t border-border">
                 <td className="px-4 py-2.5">Área</td>
-                <td className="px-4 py-2.5 text-right font-bold">{fmt2(r.area)}</td>
+                <td className="px-4 py-2.5 text-right font-bold">{fmt2(shown?.area ?? 0)}</td>
                 <td className="px-4 py-2.5 text-right text-muted-foreground">m²</td>
               </tr>
               {mode === "avance" ? (
                 <>
                   <tr className="border-t border-border bg-primary/5">
                     <td className="px-4 py-2.5">Volumen contractual</td>
-                    <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt(r.vContract ?? 0)}</td>
+                    <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt(shown?.vContract ?? 0)}</td>
                     <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
                   </tr>
                   <tr className="border-t border-border">
                     <td className="px-4 py-2.5">Volumen real 1"</td>
-                    <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt(r.vReal1 ?? 0)}</td>
+                    <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt(shown?.vReal1 ?? 0)}</td>
                     <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
                   </tr>
                   <tr className="border-t border-border">
                     <td className="px-4 py-2.5">Volumen real 2"</td>
-                    <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt(r.vReal2 ?? 0)}</td>
+                    <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt(shown?.vReal2 ?? 0)}</td>
                     <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
                   </tr>
                 </>
               ) : (
                 <tr className="border-t border-border bg-primary/5">
-                  <td className="px-4 py-2.5">Volumen de resane</td>
-                  <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt2(r.vResane ?? 0)}</td>
+                  <td className="px-4 py-2.5">Volumen de resane (Área / 11.5)</td>
+                  <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt2(shown?.vResane ?? 0)}</td>
                   <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
                 </tr>
               )}
               <tr className="border-t border-border bg-primary/5">
                 <td className="px-4 py-2.5">Calibradores (gauge pins)</td>
-                <td className="px-4 py-2.5 text-right font-bold text-primary">{r.calib}</td>
+                <td className="px-4 py-2.5 text-right font-bold text-primary">{shown?.calib ?? 0}</td>
                 <td className="px-4 py-2.5 text-right text-muted-foreground">und</td>
               </tr>
             </tbody>
@@ -273,7 +353,7 @@ export function ShotcreteCalculator() {
 
         <button
           onClick={copyReport}
-          disabled={!hasInput}
+          disabled={!valid}
           className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary font-display text-xl font-bold uppercase tracking-wider text-primary-foreground transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {copied ? <Check className="size-5" /> : <ClipboardCopy className="size-5" />}
