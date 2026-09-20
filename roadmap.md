@@ -1,8 +1,8 @@
 # Roadmap PDR Shotcrete
 
 - [x] Tema industrial oscuro + imagen hero
-- [x] Calculadora base (Avance/Resane)
-- [ ] Ajuste Fc (default para ejemplo = 20 calibradores con P=12) + validaciones de rango en línea
-- [ ] Landing: secciones Avance vs Resane, diagrama de túnel con cotas, beneficios, CTA
-- [ ] PWA offline: manifest, iconos, service worker, botón "Instalar app"
-- [ ] Verificación de build y casos de prueba
+- [x] Calculadora Avance/Resane con resultados en tiempo real
+- [x] Fc ajustable (0.85 estándar) + validaciones de rango en línea
+- [x] Landing: Avance vs Resane, diagrama de túnel con cotas, beneficios, CTA
+- [x] PWA offline: manifest, iconos, service worker (solo producción), botón instalar
+- [x] Casos de prueba verificados en navegador: Avance 1.600/1.779/3.558/20 y Resane 2.26/18
