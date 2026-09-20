@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 // ---- Constantes de cálculo (ajustables según contrato) ----
 const ESPESOR_PULGADA_M = 0.0254; // 1" en metros
-const SH = 1.4594; // Factor de sacrificio
+const SH = 1.4590; // Factor de sacrificio
 const TASA_CONTRACTUAL = 0.02916667; // m³ por m² (V_base) — verificado: 48 m² -> V_base 1.400 -> Contrato 1.600 m³
 const SOBREESPESOR_CONTRACTUAL = 0.2; // m³ adicionales
 const RESANE_RENDIMIENTO = 11.5; // m² por m³
