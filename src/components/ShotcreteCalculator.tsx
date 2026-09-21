@@ -102,11 +102,24 @@ function ResultCard({
 }) {
   return (
     <div
-      <div
-  className={`rounded-xl border-2 p-3 sm:p-5 ${
+      className={`rounded-xl border-2 p-3 sm:p-5 ${
         highlight ? "border-primary bg-primary/10" : "border-border bg-secondary"
       }`}
     >
+      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-2 font-display text-3xl font-bold tabular-nums leading-none sm:text-5xl">
+        <span className={highlight ? "text-primary" : "text-foreground"}>
+          {value}
+        </span>{" "}
+        <span className="text-lg font-semibold text-muted-foreground">
+          {unit}
+        </span>
+      </p>
+    </div>
+  );
+}
       <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
         {label}
       </p>
