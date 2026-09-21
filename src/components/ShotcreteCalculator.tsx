@@ -308,7 +308,7 @@ const reset = () => {
 
             {/* Inputs */}
 <div className="px-4 pb-2 sm:px-6">
-  <div className="grid grid-cols-2 gap-3 pt-3">
+  <div className="grid grid-cols-2 gap-3 pt-3 pb-4">
   <div>
     <label className="mb-1 block text-sm font-extrabold uppercase tracking-wide text-foreground">
       Labor
@@ -523,7 +523,7 @@ const reset = () => {
   </p>
 </div>
           {mode === "avance" ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
   {/* Fila 1: datos generales */}
   <div className="grid grid-cols-3 gap-2">
     <ResultCard
