@@ -302,9 +302,9 @@ const reset = () => {
       <div className="grid gap-4 px-4 pb-2 sm:grid-cols-3 sm:px-6">
         <div>
   <div className="mb-2 flex items-center justify-between">
-    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-      ALTURA (H) <span className="text-steel">(m)</span>
-    </span>
+    <span className="text-sm font-extrabold uppercase tracking-widest text-foreground">
+  ALTURA (H) <span className="text-steel">(m)</span>
+</span>
 
     <button
       type="button"
@@ -356,9 +356,9 @@ const reset = () => {
                 {mode === "avance" ? (
   <div>
     <div className="mb-2 flex items-center justify-between">
-      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-        ANCHO (A) <span className="text-steel">(m)</span>
-      </span>
+      <span className="text-sm font-extrabold uppercase tracking-widest text-foreground">
+  ANCHO (A) <span className="text-steel">(m)</span>
+</span>
 
       <button
         type="button"
@@ -412,9 +412,9 @@ const reset = () => {
 
         <div>
   <div className="mb-2 flex items-center justify-between">
-    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-      AVANCE (L) <span className="text-steel">(m)</span>
-    </span>
+    <span className="text-sm font-extrabold uppercase tracking-widest text-foreground">
+  AVANCE (L) <span className="text-steel">(m)</span>
+</span>
 
     <button
       type="button"
