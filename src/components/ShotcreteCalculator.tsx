@@ -410,7 +410,7 @@ const buildPDF = () => {
         ? "MALLA"
         : "RESANE";
 
-  drawDataRow("Modo", modoTexto, y);
+  drawDataRow("Uso", modoTexto, y);
   y += 7;
 
   drawDataRow("Altura (H)", `${fmtPDF(Number(h))} m`, y);
