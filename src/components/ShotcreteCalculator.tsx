@@ -461,53 +461,59 @@ const reset = () => {
           </p>
           {mode === "avance" ? (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-              <ResultCard
-                label="Perímetro"
-                value={fmt2(shown.P)}
-                unit="m"
-              />
-              <ResultCard
-                label="Área"
-                value={fmt2(shown.area)}
-                unit="m²"
-              />
-              <ResultCard
-                label="Vol. contractual"
-                value={fmt(shown.vContract)}
-                unit="m³"
-                highlight
-              />
-              <ResultCard
-                label='SH SACRIFICIO 1"'
-                value={fmt(shown.sh1)}
-                unit="m³"
-                highlight
-              />
-              <ResultCard
-                label="M³ Labor 1"
-                value={fmt(shown.vReal1)}
-                unit="m³"
-                highlight
-              />
-              <ResultCard
-                label='SH SACRIFICIO 2"'
-                value={fmt(shown.sh2)}
-                unit="m³"
-                highlight
-              />
-              <ResultCard
-                label="M³ Labor 2"
-                value={fmt(shown.vReal2)}
-                unit="m³"
-                highlight
-              />
-              <ResultCard
-                label="Calibradores"
-                value={`${shown.calib}`}
-                unit="und"
-                highlight
-              />
-            </div>
+  {/* Fila 1: datos generales */}
+  <ResultCard
+    label="Perímetro"
+    value={fmt2(shown.P)}
+    unit="m"
+  />
+  <ResultCard
+    label="Área"
+    value={fmt2(shown.area)}
+    unit="m²"
+  />
+  <ResultCard
+    label="Vol. contractual"
+    value={fmt(shown.vContract)}
+    unit="m³"
+  />
+
+  {/* Fila 2: sacrificio 1" */}
+  <ResultCard
+    label='SH SACRIFICIO 1"'
+    value={fmt(shown.sh1)}
+    unit="m³"
+    highlight
+  />
+  <ResultCard
+    label="M³ Labor 1"
+    value={fmt(shown.vReal1)}
+    unit="m³"
+    highlight
+  />
+
+  {/* Fila 3: sacrificio 2" */}
+  <ResultCard
+    label='SH SACRIFICIO 2"'
+    value={fmt(shown.sh2)}
+    unit="m³"
+    highlight
+  />
+  <ResultCard
+    label="M³ Labor 2"
+    value={fmt(shown.vReal2)}
+    unit="m³"
+    highlight
+  />
+
+  {/* Fila 4: calibradores */}
+  <ResultCard
+    label="Calibradores"
+    value={`${shown.calib}`}
+    unit="und"
+    highlight
+  />
+</div>
           ) : (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
               <ResultCard
