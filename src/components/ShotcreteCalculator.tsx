@@ -1263,7 +1263,7 @@ Fecha: ${date}`;
 </div>
 
 {/* Inputs */}
-<div className="mt-2 border-t-2 border-border px-4 pb-4 pt-5 sm:px-6">
+<div className="mt-4 border-t-2 border-border px-4 pb-4 pt-5 sm:px-6">
   <p className="mb-3 text-sm font-extrabold uppercase tracking-widest text-foreground">
     DATOS DE LA LABOR
   </p>
