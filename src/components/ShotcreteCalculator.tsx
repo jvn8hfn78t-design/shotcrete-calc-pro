@@ -668,9 +668,8 @@ const reset = () => {
             )}
             {copied ? "¡Copiado!" : "Copiar reporte"}
           </button>
-        </div>
+                </div>
       )}
-      </div>
     </div>
   );
 }
