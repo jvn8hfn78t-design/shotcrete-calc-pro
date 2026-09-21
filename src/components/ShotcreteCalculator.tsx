@@ -303,10 +303,10 @@ const reset = () => {
   toast.success("Campos limpiados");
 };
 
-const generatePDF = () => {
+const buildPDF = () => {
   if (!shown) {
     toast.error("Primero realiza el cálculo");
-    return;
+    return null;
   }
 
   const pdf = new jsPDF("p", "mm", "a4");
@@ -786,9 +786,62 @@ const generatePDF = () => {
     );
   }
 
-  pdf.save(fileName);
+  return { pdf, fileName, date };
+};
+
+const generatePDF = () => {
+  const result = buildPDF();
+
+  if (!result) return;
+
+  result.pdf.save(result.fileName);
 
   toast.success("PDF generado correctamente");
+};
+
+const sharePDF = async () => {
+  const result = buildPDF();
+
+  if (!result) return;
+
+  const { pdf, fileName, date } = result;
+
+  const blob = pdf.output("blob");
+
+  const file = new File([blob], fileName, {
+    type: "application/pdf",
+  });
+
+  const shareText = `Cálculo volumen de Shotcrete
+
+Nivel: ${nivel}
+Labor: ${labor}
+Fecha: ${date}`;
+
+  try {
+    if (
+      navigator.share &&
+      navigator.canShare?.({ files: [file] })
+    ) {
+      await navigator.share({
+        title: "Cálculo volumen de Shotcrete",
+        text: shareText,
+        files: [file],
+      });
+
+      return;
+    }
+
+    toast.error(
+      "Este dispositivo no permite compartir el PDF directamente"
+    );
+  } catch (error) {
+    if ((error as DOMException)?.name === "AbortError") {
+      return;
+    }
+
+    toast.error("No se pudo compartir el PDF");
+  }
 };
 
     const copyReport = async () => {
@@ -1458,6 +1511,13 @@ const generatePDF = () => {
   className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg border-2 border-primary bg-primary/10 font-display text-xl font-bold uppercase tracking-wider text-primary transition-all hover:bg-primary/20"
 >
   Descargar PDF
+</button>
+
+<button
+  onClick={sharePDF}
+  className="mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-lg border-2 border-primary bg-primary font-display text-xl font-bold uppercase tracking-wider text-primary-foreground transition-all hover:brightness-110"
+>
+  Compartir PDF
 </button>
 
           <button
