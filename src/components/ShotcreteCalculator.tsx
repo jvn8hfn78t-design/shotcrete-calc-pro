@@ -355,15 +355,36 @@ const vReal2 = vBase + sh2;
                     <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
                   </tr>
                   <tr className="border-t border-border">
-                    <td className="px-4 py-2.5">Volumen real 1"</td>
-                    <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt(shown?.vReal1 ?? 0)}</td>
-                    <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
-                  </tr>
-                  <tr className="border-t border-border">
-                    <td className="px-4 py-2.5">Volumen real 2"</td>
-                    <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt(shown?.vReal2 ?? 0)}</td>
-                    <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
-                  </tr>
+  <td className="px-4 py-2.5">SH SACRIFICIO 1"</td>
+  <td className="px-4 py-2.5 text-right font-bold text-primary">
+    {fmt(shown?.sh1 ?? 0)}
+  </td>
+  <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
+</tr>
+
+<tr className="border-t border-border">
+  <td className="px-4 py-2.5">M³ Labor 1</td>
+  <td className="px-4 py-2.5 text-right font-bold text-primary">
+    {fmt(shown?.vReal1 ?? 0)}
+  </td>
+  <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
+</tr>
+
+<tr className="border-t border-border">
+  <td className="px-4 py-2.5">SH SACRIFICIO 2"</td>
+  <td className="px-4 py-2.5 text-right font-bold text-primary">
+    {fmt(shown?.sh2 ?? 0)}
+  </td>
+  <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
+</tr>
+
+<tr className="border-t border-border">
+  <td className="px-4 py-2.5">M³ Labor 2</td>
+  <td className="px-4 py-2.5 text-right font-bold text-primary">
+    {fmt(shown?.vReal2 ?? 0)}
+  </td>
+  <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
+</tr>
                 </>
               ) : (
                 <tr className="border-t border-border bg-primary/5">
