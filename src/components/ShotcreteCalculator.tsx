@@ -1521,79 +1521,88 @@ Fecha: ${date}`;
 
             {/* Results */}
       {shown && (
-        <div className="border-t-2 border-border bg-background/60 px-4 py-6 sm:px-6">
-          <div className="mb-5 border-b-2 border-primary/30 pb-3">
-  <p className="text-lg font-bold uppercase tracking-[0.25em] text-primary">
-    Resultados
-  </p>
-</div>
+  <div className="border-t-2 border-border bg-background/60 px-4 py-6 sm:px-6">
+    <div className="mb-5 border-b-2 border-primary/30 pb-3">
+      <p className="text-lg font-bold uppercase tracking-[0.25em] text-primary">
+        RESULTADOS
+      </p>
+    </div>
           {mode === "avance" ? (
             <div className="space-y-4">
   {/* Fila 1: datos generales */}
-  <div className="grid grid-cols-3 gap-2">
+  <div className="space-y-3">
+  <div className="grid grid-cols-2 gap-3">
     <ResultCard
       label="Perímetro"
       value={fmt2(shown.P)}
       unit="m"
     />
+
     <ResultCard
       label="Área"
       value={fmt2(shown.area)}
       unit="m²"
     />
-    <ResultCard
-      label="Vol. Contractual"
-      value={fmt(shown.vContract)}
-      unit="m³"
-    />
   </div>
 
-  {/* Cálculo Shotcrete — Sacrificio 1" */}
-<p className="pt-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
-  Cálculo Shotcrete — Sacrificio 1"
-</p>
+  <ResultCard
+    label="Volumen según contrato"
+    value={fmt(shown.vContract)}
+    unit="m³"
+    highlight
+  />
+</div>
 
-<div className="grid grid-cols-2 gap-2">
-  <ResultCard
-    label='SH SACRIFICIO 1"'
-    value={fmt(shown.sh1)}
-    unit="m³"
-    highlight
-  />
-  <ResultCard
-    label="M³ Labor"
-    value={fmt(shown.vReal1)}
-    unit="m³"
-    highlight
-  />
+  {/* Cálculo Shotcrete — Sacrificio 1" */}
+<div className="border-t-2 border-border pt-5">
+  <p className="mb-3 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+    Cálculo Shotcrete — Sacrificio 1"
+  </p>
+
+  <div className="grid grid-cols-2 gap-3">
+    <ResultCard
+      label='SH SACRIFICIO 1"'
+      value={fmt(shown.sh1)}
+      unit="m³"
+    />
+
+    <ResultCard
+      label='M³ LABOR'
+      value={fmt(shown.vReal1)}
+      unit="m³"
+      highlight
+    />
+  </div>
 </div>
 
   {/* Cálculo Shotcrete — Sacrificio 2" */}
-<p className="pt-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
-  Cálculo Shotcrete — Sacrificio 2"
-</p>
+<div className="border-t-2 border-border pt-5">
+  <p className="mb-3 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+    Cálculo Shotcrete — Sacrificio 2"
+  </p>
 
-<div className="grid grid-cols-2 gap-2">
-  <ResultCard
-    label='SH SACRIFICIO 2"'
-    value={fmt(shown.sh2)}
-    unit="m³"
-    highlight
-  />
-  <ResultCard
-    label="M³ Labor"
-    value={fmt(shown.vReal2)}
-    unit="m³"
-    highlight
-  />
+  <div className="grid grid-cols-2 gap-3">
+    <ResultCard
+      label='SH SACRIFICIO 2"'
+      value={fmt(shown.sh2)}
+      unit="m³"
+    />
+
+    <ResultCard
+      label='M³ LABOR"'
+      value={fmt(shown.vReal2)}
+      unit="m³"
+      highlight
+    />
+  </div>
 </div>
 
   {/* Calibradores */}
-<p className="pt-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
-  Calibradores
-</p>
+<div className="border-t-2 border-border pt-5">
+  <p className="mb-3 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+    CALIBRADORES
+  </p>
 
-<div className="grid grid-cols-2 gap-2">
   <ResultCard
     label="Calibradores"
     value={`${shown.calib}`}
