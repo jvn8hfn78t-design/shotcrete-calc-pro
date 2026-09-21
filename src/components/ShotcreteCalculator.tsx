@@ -210,7 +210,8 @@ const vBase =
 
 const vContract = area > 0 ? vBase + SOBREESPESOR_CONTRACTUAL : 0;
 
-const longitudSacrificio = 2 * (H - 1.5) + 2 * A;
+const longitudSacrificio =
+  2 * Math.max(H - 1.5, 0) + 2 * A;
 
 const sh1 =
   longitudSacrificio *
@@ -270,7 +271,40 @@ const addPhotos = (files: FileList | null) => {
     reader.onload = () => {
       if (typeof reader.result !== "string") return;
 
-      setPhotos((current) => [...current, reader.result as string]);
+      const img = new Image();
+
+      img.onload = () => {
+        const maxWidth = 1600;
+        const scale = Math.min(1, maxWidth / img.width);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx) return;
+
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+
+        const compressedPhoto = canvas.toDataURL(
+          "image/jpeg",
+          0.75
+        );
+
+        setPhotos((current) => [
+          ...current,
+          compressedPhoto,
+        ]);
+      };
+
+      img.src = reader.result;
     };
 
     reader.readAsDataURL(file);
@@ -1203,7 +1237,7 @@ Fecha: ${date}`;
             "REPORTE SHOTCRETE — MODO AVANCE",
             `Labor: ${labor}`,
             `Nivel: ${nivel}`,
-            `H: ${h} m | A: ${a} m | L: ${l} m`,
+            `H: ${fmt2(average(h))} m | A: ${fmt2(average(a))} m | L: ${fmt2(average(l))} m`,
             `Espesor: ${espesor}"`,
             `Perímetro: ${fmt2(shown.P)} m`,
             `Área: ${fmt2(shown.area)} m²`,
@@ -1217,7 +1251,7 @@ Fecha: ${date}`;
               "REPORTE SHOTCRETE — MODO MALLA",
               `Labor: ${labor}`,
               `Nivel: ${nivel}`,
-              `H: ${h} m | A: ${a} m | L: ${l} m`,
+              `H: ${fmt2(average(h))} m | A: ${fmt2(average(a))} m | L: ${fmt2(average(l))} m`,
               `Perímetro: ${fmt2(shown.P)} m`,
               `Área: ${fmt2(shown.area)} m²`,
               `Volumen de malla: ${fmt(shown.vMalla ?? 0, 2)} m³`,
@@ -1226,7 +1260,7 @@ Fecha: ${date}`;
               "REPORTE SHOTCRETE — MODO RESANE",
               `Labor: ${labor}`,
               `Nivel: ${nivel}`,
-              `H: ${h} m | L: ${l} m`,
+              `H: ${fmt2(average(h))} m | L: ${fmt2(average(l))} m`,
               `Área: ${fmt2(shown.area)} m²`,
               `Volumen de resane: ${fmt2(shown.vResane ?? 0)} m³`,
               `Calibradores: ${shown.calib} und`,
@@ -1263,7 +1297,13 @@ Fecha: ${date}`;
     {(["avance", "resane", "malla"] as Mode[]).map((m) => (
           <button
             key={m}
-            onClick={() => setMode(m)}
+            onClick={() => {
+  setMode(m);
+  setH([""]);
+  setA([""]);
+  setL([""]);
+  setCalculated(false);
+}}
             className={`h-14 rounded-lg font-display text-2xl font-bold uppercase tracking-wider transition-all ${
               mode === m
                 ? "bg-primary text-primary-foreground shadow-[0_0_24px_-6px] shadow-primary/60"
