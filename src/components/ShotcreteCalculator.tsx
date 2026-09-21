@@ -25,9 +25,14 @@ const RANGES = {
 type Mode = "avance" | "resane";
 type FieldKey = keyof typeof RANGES;
 
-function parse(v: string): number {
-  const n = parseFloat(v.replace(",", "."));
-  return Number.isFinite(n) ? n : 0;
+function average(values: string[]): number {
+  const numbers = values
+    .map(parse)
+    .filter((value) => value > 0);
+
+  if (numbers.length === 0) return 0;
+
+  return numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
 }
 
 const fmt = (n: number, d = 3) =>
@@ -109,36 +114,53 @@ function ResultCard({
 
 export function ShotcreteCalculator() {
   const [mode, setMode] = useState<Mode>("avance");
-  const [h, setH] = useState("");
-  const [a, setA] = useState("");
-  const [l, setL] = useState("");
+  const [h, setH] = useState<string[]>([""]);
+const [a, setA] = useState<string[]>([""]);
+const [l, setL] = useState<string[]>([""]);
   const [perimetro, setPerimetro] = useState("12");
   const [copied, setCopied] = useState(false);
 const [calculated, setCalculated] = useState(false);
 
-  const errors = useMemo(() => {
+    const errors = useMemo(() => {
     const list: string[] = [];
-    const eH = fieldError("h", h);
-    const eL = fieldError("l", l);
-    if (eH) list.push(eH);
-    if (eL) list.push(eL);
+
+    h.forEach((value, index) => {
+      const error = fieldError("h", value);
+      if (error) list.push(`Altura ${index + 1}: ${error}`);
+    });
+
+    l.forEach((value, index) => {
+      const error = fieldError("l", value);
+      if (error) list.push(`Avance ${index + 1}: ${error}`);
+    });
+
     if (mode === "avance") {
-      const eA = fieldError("a", a);
-      if (eA) list.push(eA);
+      a.forEach((value, index) => {
+        const error = fieldError("a", value);
+        if (error) list.push(`Ancho ${index + 1}: ${error}`);
+      });
     } else {
       const eP = fieldError("p", perimetro);
       if (eP) list.push(eP);
     }
+
     return list;
   }, [mode, h, a, l, perimetro]);
 
-  const inputsComplete = mode === "avance" ? h && a && l : h && l;
-  const valid = !!inputsComplete && errors.length === 0;
+  const inputsComplete =
+    mode === "avance"
+      ? h.some((value) => value.trim() !== "") &&
+        a.some((value) => value.trim() !== "") &&
+        l.some((value) => value.trim() !== "")
+      : h.some((value) => value.trim() !== "") &&
+        l.some((value) => value.trim() !== "");
+
+  const valid = inputsComplete && errors.length === 0;
 
   const r = useMemo(() => {
-    const H = parse(h);
-    const A = parse(a);
-    const L = parse(l);
+    const H = average(h);
+const A = average(a);
+const L = average(l);
     if (mode === "avance") {
       const P = 2 * H + A;
       const area = P * L;
@@ -195,12 +217,27 @@ const vReal2 = vBase + sh2;
   setCalculated(true);
 };
 
+const addMeasurement = (
+  setter: React.Dispatch<React.SetStateAction<string[]>>
+) => {
+  setter((values) => [...values, ""]);
+};
+
+const removeMeasurement = (
+  setter: React.Dispatch<React.SetStateAction<string[]>>,
+  index: number
+) => {
+  setter((values) => {
+    if (values.length === 1) return values;
+    return values.filter((_, i) => i !== index);
+  });
+};
+
 const reset = () => {
-  setH("");
-  setA("");
-  setL("");
+  setH([""]);
+  setA([""]);
+  setL([""]);
   setPerimetro("12");
-  setFc(String(FC_DEFAULT));
   setCalculated(false);
   toast.success("Campos limpiados");
 };
@@ -257,15 +294,143 @@ const reset = () => {
         ))}
       </div>
 
-      {/* Inputs */}
+            {/* Inputs */}
       <div className="grid gap-4 px-4 pb-2 sm:grid-cols-3 sm:px-6">
-        <Field fieldKey="h" value={h} onChange={setH} />
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              ALTURA (H) <span className="text-steel">(m)</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => addMeasurement(setH)}
+              className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-lg font-bold text-primary-foreground"
+            >
+              +
+            </button>
+          </div>
+
+          <div className="space-y-2">
+  {h.map((value, index) => (
+    <div key={index} className="flex gap-2">
+      <Field
+        fieldKey="h"
+        value={value}
+        onChange={(v) =>
+          setH((values) =>
+            values.map((item, i) => (i === index ? v : item))
+          )
+        }
+      />
+      {h.length > 1 && (
+        <button
+          type="button"
+          onClick={() => removeMeasurement(setH, index)}
+          className="mt-0 h-16 w-10 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+        >
+          −
+        </button>
+      )}
+    </div>
+  ))}
+</div>
+
+<p className="mt-2 text-xs font-bold text-muted-foreground">
+  Promedio H: {average(h).toFixed(2)} m
+</p>
+        </div>
+
         {mode === "avance" ? (
-          <Field fieldKey="a" value={a} onChange={setA} />
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                ANCHO (A) <span className="text-steel">(m)</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => addMeasurement(setA)}
+                className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-lg font-bold text-primary-foreground"
+              >
+                +
+              </button>
+            </div>
+
+            <div className="space-y-2">
+  {a.map((value, index) => (
+    <div key={index} className="flex gap-2">
+      <Field
+        fieldKey="a"
+        value={value}
+        onChange={(v) =>
+          setA((values) =>
+            values.map((item, i) => (i === index ? v : item))
+          )
+        }
+      />
+      {a.length > 1 && (
+        <button
+          type="button"
+          onClick={() => removeMeasurement(setA, index)}
+          className="mt-0 h-16 w-10 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+        >
+          −
+        </button>
+      )}
+    </div>
+  ))}
+</div>
+
+<p className="mt-2 text-xs font-bold text-muted-foreground">
+  Promedio A: {average(a).toFixed(2)} m
+</p>
+          </div>
         ) : (
           <Field fieldKey="p" value={perimetro} onChange={setPerimetro} />
         )}
-        <Field fieldKey="l" value={l} onChange={setL} />
+
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              AVANCE (L) <span className="text-steel">(m)</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => addMeasurement(setL)}
+              className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-lg font-bold text-primary-foreground"
+            >
+              +
+            </button>
+          </div>
+
+          <div className="space-y-2">
+  {l.map((value, index) => (
+    <div key={index} className="flex gap-2">
+      <Field
+        fieldKey="l"
+        value={value}
+        onChange={(v) =>
+          setL((values) =>
+            values.map((item, i) => (i === index ? v : item))
+          )
+        }
+      />
+      {l.length > 1 && (
+        <button
+          type="button"
+          onClick={() => removeMeasurement(setL, index)}
+          className="mt-0 h-16 w-10 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+        >
+          −
+        </button>
+      )}
+    </div>
+  ))}
+</div>
+
+<p className="mt-2 text-xs font-bold text-muted-foreground">
+  Promedio L: {average(l).toFixed(2)} m
+</p>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
