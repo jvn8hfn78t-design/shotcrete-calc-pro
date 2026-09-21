@@ -317,14 +317,15 @@ const reset = () => {
 
         {mode === "avance" ? (
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-            <ResultCard label="Perímetro" value={fmt2(shown?.P ?? 0)} unit="m" />
-            <ResultCard label="Área" value={fmt2(shown?.area ?? 0)} unit="m²" />
-            <ResultCard label="Vol. contractual" value={fmt(shown?.vContract ?? 0)} unit="m³" highlight />
-            <ResultCard label='SH SACRIFICIO 1"' value={fmt(shown?.sh1 ?? 0)} unit="m³" highlight />
-<ResultCard label="M³ Labor 1" value={fmt(shown?.vReal1 ?? 0)} unit="m³" highlight />
-<ResultCard label='SH SACRIFICIO 2"' value={fmt(shown?.sh2 ?? 0)} unit="m³" highlight />
-<ResultCard label="M³ Labor 2" value={fmt(shown?.vReal2 ?? 0)} unit="m³" highlight />
-          </div>
+  <ResultCard label="Perímetro" value={fmt2(shown?.P ?? 0)} unit="m" />
+  <ResultCard label="Área" value={fmt2(shown?.area ?? 0)} unit="m²" />
+  <ResultCard label="Vol. contractual" value={fmt(shown?.vContract ?? 0)} unit="m³" highlight />
+  <ResultCard label='SH SACRIFICIO 1"' value={fmt(shown?.sh1 ?? 0)} unit="m³" highlight />
+  <ResultCard label="M³ Labor 1" value={fmt(shown?.vReal1 ?? 0)} unit="m³" highlight />
+  <ResultCard label='SH SACRIFICIO 2"' value={fmt(shown?.sh2 ?? 0)} unit="m³" highlight />
+  <ResultCard label="M³ Labor 2" value={fmt(shown?.vReal2 ?? 0)} unit="m³" highlight />
+  <ResultCard label="Calibradores" value={`${shown?.calib ?? 0}`} unit="und" highlight />
+</div>
         ) : (
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
             <ResultCard label="Perímetro" value={fmt2(shown?.P ?? 0)} unit="m" />
