@@ -327,7 +327,7 @@ const buildPDF = () => {
     "-"
   )}.pdf`;
 
-  const fmtPDF = (value: number, decimals = 2) =>
+  const fmtPDF = (value: number, decimals = 1) =>
     Number(value || 0).toFixed(decimals);
 
   // ─────────────────────────────────────────────
@@ -346,88 +346,137 @@ const buildPDF = () => {
   pdf.text("CÁLCULO DE VOLUMEN DE SHOTCRETE", margin, 21);
 
   // ─────────────────────────────────────────────
-  // DATOS GENERALES
+// DATOS GENERALES
+// ─────────────────────────────────────────────
+
+let y = 40;
+
+const generalBoxHeight = 29;
+
+pdf.setDrawColor(150, 150, 150);
+pdf.setLineWidth(0.4);
+pdf.rect(margin, y, contentWidth, generalBoxHeight);
+
+pdf.setTextColor(35, 35, 35);
+pdf.setFont("helvetica", "bold");
+pdf.setFontSize(10);
+
+pdf.text("DATOS GENERALES", margin + 4, y + 6);
+
+pdf.setFontSize(9);
+
+pdf.setFont("helvetica", "bold");
+pdf.text("Fecha:", margin + 4, y + 14);
+
+pdf.setFont("helvetica", "normal");
+pdf.text(date, margin + 30, y + 14);
+
+pdf.setFont("helvetica", "bold");
+pdf.text("Nivel:", margin + 4, y + 21);
+
+pdf.setFont("helvetica", "normal");
+pdf.text(nivel || "—", margin + 30, y + 21);
+
+pdf.setFont("helvetica", "bold");
+pdf.text("Labor:", margin + contentWidth / 2, y + 21);
+
+pdf.setFont("helvetica", "normal");
+pdf.text(labor || "—", margin + contentWidth / 2 + 25, y + 21);
+
+y += generalBoxHeight;
+
   // ─────────────────────────────────────────────
+// DATOS DE LA LABOR
+// ─────────────────────────────────────────────
 
-  let y = 40;
+y += 9;
 
-  pdf.setTextColor(35, 35, 35);
+const laborRows =
+  mode === "avance"
+    ? 5
+    : mode === "malla"
+      ? 4
+      : 3;
+
+const laborBoxHeight = 11 + laborRows * 7;
+
+pdf.setDrawColor(150, 150, 150);
+pdf.setLineWidth(0.4);
+pdf.rect(
+  margin,
+  y,
+  contentWidth,
+  laborBoxHeight
+);
+
+pdf.setTextColor(35, 35, 35);
+pdf.setFont("helvetica", "bold");
+pdf.setFontSize(10);
+
+pdf.text(
+  "DATOS DE LA LABOR",
+  margin + 4,
+  y + 6
+);
+
+y += 14;
+
+const drawDataRow = (
+  label: string,
+  value: string,
+  rowY: number
+) => {
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(9);
+  pdf.text(label, margin + 4, rowY);
 
-  pdf.text("Fecha:", margin, y);
   pdf.setFont("helvetica", "normal");
-  pdf.text(date, margin + 20, y);
+  pdf.text(value, margin + 55, rowY);
+};
 
+const modoTexto =
+  mode === "avance"
+    ? "AVANCE"
+    : mode === "malla"
+      ? "MALLA"
+      : "RESANE";
+
+drawDataRow("USO", modoTexto, y);
+y += 7;
+
+drawDataRow(
+  "ALTURA",
+  `${fmtPDF(average(h))} m`,
+  y
+);
+y += 7;
+
+if (mode !== "resane") {
+  drawDataRow(
+    "ANCHO",
+    `${fmtPDF(average(a))} m`,
+    y
+  );
   y += 7;
+}
 
-  pdf.setFont("helvetica", "bold");
-  pdf.text("Nivel:", margin, y);
-  pdf.setFont("helvetica", "normal");
-  pdf.text(nivel || "—", margin + 20, y);
+drawDataRow(
+  "AVANCE",
+  `${fmtPDF(average(l))} m`,
+  y
+);
+y += 7;
 
+if (mode === "avance") {
+  drawDataRow(
+    "ESPESOR",
+    `${espesor}"`,
+    y
+  );
   y += 7;
+}
 
-  pdf.setFont("helvetica", "bold");
-  pdf.text("Labor:", margin, y);
-  pdf.setFont("helvetica", "normal");
-  pdf.text(labor || "—", margin + 20, y);
-
-  // ─────────────────────────────────────────────
-  // DATOS DE LA LABOR
-  // ─────────────────────────────────────────────
-
-  y += 12;
-
-  pdf.setFillColor(235, 235, 235);
-  pdf.rect(margin, y, contentWidth, 8, "F");
-
-  pdf.setTextColor(35, 35, 35);
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(10);
-  pdf.text("DATOS DE LA LABOR", margin + 4, y + 5.5);
-
-  y += 15;
-
-  pdf.setFontSize(9);
-
-  const drawDataRow = (
-    label: string,
-    value: string,
-    rowY: number
-  ) => {
-    pdf.setFont("helvetica", "bold");
-    pdf.text(label, margin + 4, rowY);
-
-    pdf.setFont("helvetica", "normal");
-    pdf.text(value, margin + 55, rowY);
-  };
-
-  const modoTexto =
-    mode === "avance"
-      ? "AVANCE"
-      : mode === "malla"
-        ? "MALLA"
-        : "RESANE";
-
-  drawDataRow("Uso", modoTexto, y);
-  y += 7;
-
-  drawDataRow("Altura (H)", `${fmtPDF(average(h))} m`, y);
-  y += 7;
-
-  if (mode !== "resane") {
-    drawDataRow("Ancho (A)", `${fmtPDF(average(a))} m`, y);
-    y += 7;
-  }
-
-  drawDataRow("Avance (L)", `${fmtPDF(average(l))} m`, y);
-  y += 7;
-
-  if (mode === "avance") {
-    drawDataRow("Espesor", `${espesor}"`, y);
-    y += 7;
-  }
+y += 3;
 
   // Línea separadora
   y += 3;
@@ -452,210 +501,497 @@ const buildPDF = () => {
   y += 14;
 
   // AVANCE
-  if (mode === "avance") {
-    const colWidth = contentWidth / 3;
+if (mode === "avance") {
+  const colWidth = contentWidth / 3;
+  const half = contentWidth / 2;
 
-    pdf.setFontSize(8);
-    pdf.setFont("helvetica", "bold");
+  // ─────────────────────────────────────────────
+  // PERÍMETRO / ÁREA / V. CONTRATO
+  // ─────────────────────────────────────────────
 
-    pdf.text("PERÍMETRO", margin + 2, y);
-    pdf.text("ÁREA", margin + colWidth + 2, y);
-    pdf.text(
-      "V. CONTRATO",
-      margin + colWidth * 2 + 2,
-      y
-    );
+  const mainBoxHeight = 28;
 
-    y += 6;
+  pdf.setDrawColor(150, 150, 150);
+  pdf.setLineWidth(0.4);
 
-    pdf.setFontSize(11);
-    pdf.setFont("helvetica", "bold");
+  pdf.rect(
+    margin,
+    y,
+    contentWidth,
+    mainBoxHeight
+  );
 
-    pdf.text(
-      `${fmtPDF(shown.P)} m`,
-      margin + 2,
-      y
-    );
+  pdf.line(
+    margin + colWidth,
+    y,
+    margin + colWidth,
+    y + mainBoxHeight
+  );
 
-    pdf.text(
-      `${fmtPDF(shown.area)} m²`,
-      margin + colWidth + 2,
-      y
-    );
+  pdf.line(
+    margin + colWidth * 2,
+    y,
+    margin + colWidth * 2,
+    y + mainBoxHeight
+  );
 
-    pdf.text(
-      `${fmtPDF(shown.vContract ?? 0)} m³`,
-      margin + colWidth * 2 + 2,
-      y
-    );
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(8);
+  pdf.setTextColor(60, 60, 60);
 
-    y += 14;
+  pdf.text(
+    "PERÍMETRO",
+    margin + 3,
+    y + 6
+  );
 
-    // SACRIFICIO 1"
-    pdf.setFillColor(245, 245, 245);
-    pdf.rect(margin, y, contentWidth, 7, "F");
+  pdf.text(
+    "ÁREA",
+    margin + colWidth + 3,
+    y + 6
+  );
 
-    pdf.setFontSize(9);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("SACRIFICIO 1\"", margin + 3, y + 5);
+  pdf.text(
+    "V. CONTRATO",
+    margin + colWidth * 2 + 3,
+    y + 6
+  );
 
-    y += 13;
+  pdf.setFontSize(11);
+  pdf.setTextColor(25, 25, 25);
 
-    const half = contentWidth / 2;
+  pdf.text(
+    `${fmtPDF(shown.P)} m`,
+    margin + 3,
+    y + 19
+  );
 
-    pdf.setFontSize(8);
-    pdf.text("SH", margin + 4, y);
-    pdf.text("M³ LABOR", margin + half + 4, y);
+  pdf.text(
+    `${fmtPDF(shown.area)} m²`,
+    margin + colWidth + 3,
+    y + 19
+  );
 
-    y += 6;
+  pdf.setFont("helvetica", "bold");
 
-    pdf.setFontSize(11);
+  pdf.text(
+    `${fmtPDF(shown.vContract ?? 0)} m³`,
+    margin + colWidth * 2 + 3,
+    y + 19
+  );
 
-    pdf.text(
-      `${fmtPDF(shown.sh1 ?? 0)} m³`,
-      margin + 4,
-      y
-    );
+  y += mainBoxHeight + 8;
 
-    pdf.text(
-      `${fmtPDF(shown.vReal1 ?? 0)} m³`,
-      margin + half + 4,
-      y
-    );
+  // ─────────────────────────────────────────────
+  // SACRIFICIO 1"
+  // ─────────────────────────────────────────────
 
-    y += 13;
+  const sacrificeBoxHeight = 30;
 
-    // SACRIFICIO 2"
-    pdf.setFillColor(245, 245, 245);
-    pdf.rect(margin, y, contentWidth, 7, "F");
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(9);
+  pdf.setTextColor(35, 35, 35);
 
-    pdf.setFontSize(9);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("SACRIFICIO 2\"", margin + 3, y + 5);
+  pdf.rect(
+    margin,
+    y,
+    contentWidth,
+    sacrificeBoxHeight
+  );
 
-    y += 13;
+  pdf.text(
+    'SACRIFICIO 1"',
+    margin + 3,
+    y + 6
+  );
 
-    pdf.setFontSize(8);
-    pdf.text("SH", margin + 4, y);
-    pdf.text("M³ LABOR", margin + half + 4, y);
+  pdf.line(
+    margin,
+    y + 9,
+    margin + contentWidth,
+    y + 9
+  );
 
-    y += 6;
+  pdf.line(
+    margin + half,
+    y + 9,
+    margin + half,
+    y + sacrificeBoxHeight
+  );
 
-    pdf.setFontSize(11);
+  pdf.setFontSize(8);
+  pdf.setTextColor(70, 70, 70);
 
-    pdf.text(
-      `${fmtPDF(shown.sh2 ?? 0)} m³`,
-      margin + 4,
-      y
-    );
+  pdf.text(
+    "SH",
+    margin + 4,
+    y + 15
+  );
 
-    pdf.text(
-      `${fmtPDF(shown.vReal2 ?? 0)} m³`,
-      margin + half + 4,
-      y
-    );
+  pdf.text(
+    'M³ LABOR 1"',
+    margin + half + 4,
+    y + 15
+  );
 
-    y += 15;
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(11);
+  pdf.setTextColor(25, 25, 25);
 
-    // CALIBRADORES
-    pdf.setFillColor(245, 245, 245);
-    pdf.rect(margin, y, contentWidth, 7, "F");
+  pdf.text(
+    `${fmtPDF(shown.sh1 ?? 0)} m³`,
+    margin + 4,
+    y + 25
+  );
 
-    pdf.setFontSize(9);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("CALIBRADORES", margin + 3, y + 5);
+  pdf.text(
+    `${fmtPDF(shown.vReal1 ?? 0)} m³`,
+    margin + half + 4,
+    y + 25
+  );
 
-    y += 13;
+  y += sacrificeBoxHeight + 8;
 
-    pdf.setFontSize(11);
-    pdf.text(`${shown.calib ?? 0} und`, margin + 4, y);
-  }
+  // ─────────────────────────────────────────────
+  // SACRIFICIO 2"
+  // ─────────────────────────────────────────────
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(9);
+  pdf.setTextColor(35, 35, 35);
+
+  pdf.rect(
+    margin,
+    y,
+    contentWidth,
+    sacrificeBoxHeight
+  );
+
+  pdf.text(
+    'SACRIFICIO 2"',
+    margin + 3,
+    y + 6
+  );
+
+  pdf.line(
+    margin,
+    y + 9,
+    margin + contentWidth,
+    y + 9
+  );
+
+  pdf.line(
+    margin + half,
+    y + 9,
+    margin + half,
+    y + sacrificeBoxHeight
+  );
+
+  pdf.setFontSize(8);
+  pdf.setTextColor(70, 70, 70);
+
+  pdf.text(
+    "SH",
+    margin + 4,
+    y + 15
+  );
+
+  pdf.text(
+    'M³ LABOR 2"',
+    margin + half + 4,
+    y + 15
+  );
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(11);
+  pdf.setTextColor(25, 25, 25);
+
+  pdf.text(
+    `${fmtPDF(shown.sh2 ?? 0)} m³`,
+    margin + 4,
+    y + 25
+  );
+
+  pdf.text(
+    `${fmtPDF(shown.vReal2 ?? 0)} m³`,
+    margin + half + 4,
+    y + 25
+  );
+
+  y += sacrificeBoxHeight + 8;
+
+  // ─────────────────────────────────────────────
+  // CALIBRADORES
+  // ─────────────────────────────────────────────
+
+  const calibBoxHeight = 28;
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(9);
+  pdf.setTextColor(35, 35, 35);
+
+  pdf.rect(
+    margin,
+    y,
+    contentWidth,
+    calibBoxHeight
+  );
+
+  pdf.text(
+    "CALIBRADORES",
+    margin + 3,
+    y + 6
+  );
+
+  pdf.setFontSize(13);
+  pdf.setTextColor(25, 25, 25);
+
+  pdf.text(
+    `${shown.calib ?? 0} UND`,
+    pageWidth / 2,
+    y + 20,
+    {
+      align: "center",
+    }
+  );
+
+  y += calibBoxHeight;
+}
 
   // MALLA
-  if (mode === "malla") {
-    pdf.setFontSize(8);
-    pdf.setFont("helvetica", "bold");
+if (mode === "malla") {
+  const colWidth = contentWidth / 2;
 
-    pdf.text("PERÍMETRO", margin + 2, y);
-    pdf.text("ÁREA", margin + contentWidth / 2 + 2, y);
+  // ─────────────────────────────────────────────
+  // PERÍMETRO / ÁREA
+  // ─────────────────────────────────────────────
 
-    y += 6;
+  const mainBoxHeight = 28;
 
-    pdf.setFontSize(11);
+  pdf.setDrawColor(150, 150, 150);
+  pdf.setLineWidth(0.4);
 
-    pdf.text(
-      `${fmtPDF(shown.P)} m`,
-      margin + 2,
-      y
-    );
+  pdf.rect(
+    margin,
+    y,
+    contentWidth,
+    mainBoxHeight
+  );
 
-    pdf.text(
-      `${fmtPDF(shown.area)} m²`,
-      margin + contentWidth / 2 + 2,
-      y
-    );
+  pdf.line(
+    margin + colWidth,
+    y,
+    margin + colWidth,
+    y + mainBoxHeight
+  );
 
-    y += 14;
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(8);
+  pdf.setTextColor(60, 60, 60);
 
-    pdf.setFillColor(245, 245, 245);
-    pdf.rect(margin, y, contentWidth, 7, "F");
+  pdf.text(
+    "PERÍMETRO",
+    margin + 3,
+    y + 6
+  );
 
-    pdf.setFontSize(9);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("VOLUMEN DE MALLA", margin + 3, y + 5);
+  pdf.text(
+    "ÁREA",
+    margin + colWidth + 3,
+    y + 6
+  );
 
-    y += 13;
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(11);
+  pdf.setTextColor(25, 25, 25);
 
-    pdf.setFontSize(13);
-    pdf.text(
-      `${fmtPDF(shown.vMalla ?? 0)} m³`,
-      margin + 4,
-      y
-    );
-  }
+  pdf.text(
+    `${fmtPDF(shown.P)} m`,
+    margin + 3,
+    y + 19
+  );
+
+  pdf.text(
+    `${fmtPDF(shown.area)} m²`,
+    margin + colWidth + 3,
+    y + 19
+  );
+
+  y += mainBoxHeight + 8;
+
+  // ─────────────────────────────────────────────
+  // VOLUMEN DE MALLA
+  // ─────────────────────────────────────────────
+
+  const volumeBoxHeight = 28;
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(9);
+  pdf.setTextColor(35, 35, 35);
+
+  pdf.rect(
+    margin,
+    y,
+    contentWidth,
+    volumeBoxHeight
+  );
+
+  pdf.text(
+    "VOLUMEN DE MALLA",
+    margin + 3,
+    y + 6
+  );
+
+  pdf.setFontSize(13);
+  pdf.setTextColor(25, 25, 25);
+
+  pdf.text(
+    `${fmtPDF(shown.vMalla ?? 0, 2)} m³`,
+    pageWidth / 2,
+    y + 20,
+    {
+      align: "center",
+    }
+  );
+
+  y += volumeBoxHeight;
+}
 
   // RESANE
-  if (mode === "resane") {
-    pdf.setFontSize(8);
-    pdf.setFont("helvetica", "bold");
+if (mode === "resane") {
+  const colWidth = contentWidth / 2;
 
-    pdf.text("ÁREA", margin + 2, y);
-    pdf.text(
-      "VOLUMEN DE RESANE",
-      margin + contentWidth / 2 + 2,
-      y
-    );
+  // ─────────────────────────────────────────────
+  // PERÍMETRO / ÁREA
+  // ─────────────────────────────────────────────
 
-    y += 6;
+  const mainBoxHeight = 28;
 
-    pdf.setFontSize(11);
+  pdf.setDrawColor(150, 150, 150);
+  pdf.setLineWidth(0.4);
 
-    pdf.text(
-      `${fmtPDF(shown.area)} m²`,
-      margin + 2,
-      y
-    );
+  pdf.rect(
+    margin,
+    y,
+    contentWidth,
+    mainBoxHeight
+  );
 
-    pdf.text(
-      `${fmtPDF(shown.vResane ?? 0)} m³`,
-      margin + contentWidth / 2 + 2,
-      y
-    );
+  pdf.line(
+    margin + colWidth,
+    y,
+    margin + colWidth,
+    y + mainBoxHeight
+  );
 
-    y += 14;
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(8);
+  pdf.setTextColor(60, 60, 60);
 
-    pdf.setFillColor(245, 245, 245);
-    pdf.rect(margin, y, contentWidth, 7, "F");
+  pdf.text(
+    "PERÍMETRO",
+    margin + 3,
+    y + 6
+  );
 
-    pdf.setFontSize(9);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("CALIBRADORES", margin + 3, y + 5);
+  pdf.text(
+    "ÁREA",
+    margin + colWidth + 3,
+    y + 6
+  );
 
-    y += 13;
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(11);
+  pdf.setTextColor(25, 25, 25);
 
-    pdf.setFontSize(11);
-    pdf.text(`${shown.calib ?? 0} und`, margin + 4, y);
-  }
+  pdf.text(
+    `${fmtPDF(shown.P)} m`,
+    margin + 3,
+    y + 19
+  );
+
+  pdf.text(
+    `${fmtPDF(shown.area)} m²`,
+    margin + colWidth + 3,
+    y + 19
+  );
+
+  y += mainBoxHeight + 8;
+
+  // ─────────────────────────────────────────────
+  // VOLUMEN DE RESANE
+  // ─────────────────────────────────────────────
+
+  const volumeBoxHeight = 28;
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(9);
+  pdf.setTextColor(35, 35, 35);
+
+  pdf.rect(
+    margin,
+    y,
+    contentWidth,
+    volumeBoxHeight
+  );
+
+  pdf.text(
+    "VOLUMEN DE RESANE",
+    margin + 3,
+    y + 6
+  );
+
+  pdf.setFontSize(13);
+  pdf.setTextColor(25, 25, 25);
+
+  pdf.text(
+    `${fmtPDF(shown.vResane ?? 0)} m³`,
+    pageWidth / 2,
+    y + 20,
+    {
+      align: "center",
+    }
+  );
+
+  y += volumeBoxHeight + 8;
+
+  // ─────────────────────────────────────────────
+  // CALIBRADORES
+  // ─────────────────────────────────────────────
+
+  const calibBoxHeight = 28;
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(9);
+  pdf.setTextColor(35, 35, 35);
+
+  pdf.rect(
+    margin,
+    y,
+    contentWidth,
+    calibBoxHeight
+  );
+
+  pdf.text(
+    "CALIBRADORES",
+    margin + 3,
+    y + 6
+  );
+
+  pdf.setFontSize(13);
+  pdf.setTextColor(25, 25, 25);
+
+  pdf.text(
+    `${shown.calib ?? 0} UND`,
+    pageWidth / 2,
+    y + 20,
+    {
+      align: "center",
+    }
+  );
+
+  y += calibBoxHeight;
+}
 
   // ─────────────────────────────────────────────
   // FOTOS
