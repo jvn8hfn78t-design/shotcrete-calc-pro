@@ -125,7 +125,9 @@ export function ShotcreteCalculator() {
   const [h, setH] = useState<string[]>([""]);
 const [a, setA] = useState<string[]>([""]);
 const [l, setL] = useState<string[]>([""]);
-  const [copied, setCopied] = useState(false);
+const [labor, setLabor] = useState("");
+const [nivel, setNivel] = useState("");
+const [copied, setCopied] = useState(false);
 const [calculated, setCalculated] = useState(false);
 
     const errors = useMemo(() => {
@@ -242,6 +244,8 @@ const reset = () => {
   setH([""]);
   setA([""]);
   setL([""]);
+  setLabor("");
+  setNivel("");
   setCalculated(false);
   toast.success("Campos limpiados");
 };
@@ -252,7 +256,9 @@ const reset = () => {
       mode === "avance"
         ? [
             "REPORTE SHOTCRETE — MODO AVANCE",
-            `H: ${h} m | A: ${a} m | L: ${l} m`,
+`Labor: ${labor}`,
+`Nivel: ${nivel}`,
+`H: ${h} m | A: ${a} m | L: ${l} m`,
             `Perímetro: ${fmt2(shown.P)} m`,
             `Área: ${fmt2(shown.area)} m²`,
             `Volumen contractual: ${fmt(shown.vContract ?? 0)} m³`,
@@ -262,7 +268,9 @@ const reset = () => {
           ]
         : [
             "REPORTE SHOTCRETE — MODO RESANE",
-            `H: ${h} m | L: ${l} m`,
+`Labor: ${labor}`,
+`Nivel: ${nivel}`,
+`H: ${h} m | L: ${l} m`,
             `Área: ${fmt2(shown.area)} m²`,
             `Volumen de resane: ${fmt2(shown.vResane ?? 0)} m³`,
             `Calibradores: ${shown.calib} und`,
@@ -299,8 +307,35 @@ const reset = () => {
       </div>
 
             {/* Inputs */}
-      <div className="grid gap-4 px-4 pb-2 sm:grid-cols-3 sm:px-6">
-        <div>
+<div className="px-4 pb-2 sm:px-6">
+  <div className="grid grid-cols-2 gap-3 pt-3">
+  <div>
+    <label className="mb-1 block text-sm font-extrabold uppercase tracking-wide text-foreground">
+      Labor
+    </label>
+    <input
+      type="text"
+      value={labor}
+      onChange={(e) => setLabor(e.target.value)}
+      placeholder="Ingrese labor"
+      className="h-12 w-full rounded-lg border-2 border-input bg-secondary px-3 text-base font-semibold text-foreground outline-none focus:border-primary"
+    />
+  </div>
+
+  <div>
+    <label className="mb-1 block text-sm font-extrabold uppercase tracking-wide text-foreground">
+      Nivel
+    </label>
+    <input
+      type="text"
+      value={nivel}
+      onChange={(e) => setNivel(e.target.value)}
+      placeholder="Ingrese nivel"
+      className="h-12 w-full rounded-lg border-2 border-input bg-secondary px-3 text-base font-semibold text-foreground outline-none focus:border-primary"
+    />
+  </div>
+</div>
+<div>
   <div className="mb-2 flex items-center justify-between">
     <span className="text-sm font-extrabold uppercase tracking-widest text-foreground">
   ALTURA (H) <span className="text-steel">(m)</span>
@@ -462,7 +497,7 @@ const reset = () => {
     Promedio L: {average(l).toFixed(2)} m
   </p>
 </div>
-
+</div>
       <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
   <button
     onClick={calculate}
