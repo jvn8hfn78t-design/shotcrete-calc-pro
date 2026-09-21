@@ -40,9 +40,9 @@ function average(values: string[]): number {
   return numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
 }
 
-const fmt = (n: number, d = 3) =>
+const fmt = (n: number, d = 1) =>
   n.toLocaleString("es-PE", { minimumFractionDigits: d, maximumFractionDigits: d });
-const fmt2 = (n: number) => fmt(n, 2);
+const fmt2 = (n: number) => fmt(n, 1);
 
 function fieldError(key: FieldKey, raw: string): string | null {
   if (raw.trim() === "") return null; // vacío: sin error inline, simplemente no hay cálculo
