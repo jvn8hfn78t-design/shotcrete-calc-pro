@@ -500,6 +500,7 @@ const reset = () => {
     Promedio L: {average(l).toFixed(2)} m
   </p>
 </div>
+<div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
       <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
   <button
     onClick={calculate}
