@@ -1,5 +1,13 @@
 import { useMemo, useState } from "react";
-import { ClipboardCopy, RotateCcw, Check, AlertTriangle } from "lucide-react";
+import {
+  ClipboardCopy,
+  RotateCcw,
+  Check,
+  AlertTriangle,
+  Camera,
+  ImagePlus,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 
 // ---- Constantes de cálculo (ajustables según contrato) ----
@@ -131,6 +139,7 @@ const [nivel, setNivel] = useState("");
 const [espesor, setEspesor] = useState("2");
 const [copied, setCopied] = useState(false);
 const [calculated, setCalculated] = useState(false);
+const [photos, setPhotos] = useState<string[]>([]);
 
       const errors = useMemo(() => {
     const list: string[] = [];
@@ -233,6 +242,30 @@ return { P, area, vResane, calib, filas };
 
   const shown = calculated && valid ? r : null;
 
+const addPhotos = (files: FileList | null) => {
+  if (!files) return;
+
+  const selectedFiles = Array.from(files);
+
+  selectedFiles.forEach((file) => {
+    if (!file.type.startsWith("image/")) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (typeof reader.result !== "string") return;
+
+      setPhotos((current) => [...current, reader.result as string]);
+    };
+
+    reader.readAsDataURL(file);
+  });
+};
+
+const removePhoto = (index: number) => {
+  setPhotos((current) => current.filter((_, i) => i !== index));
+};
+
   const calculate = () => {
   if (!valid) {
     toast.error("Ingresa valores válidos para calcular");
@@ -265,6 +298,7 @@ const reset = () => {
   setNivel("");
   setEspesor("2");
   setCalculated(false);
+  setPhotos([]);
   toast.success("Campos limpiados");
 };
 
@@ -852,6 +886,84 @@ const reset = () => {
     </tbody>
   </table>
 </div>
+
+{/* Evidencia fotográfica */}
+<div className="mt-6 border-t border-border pt-6">
+  <div className="mb-3">
+    <p className="text-sm font-extrabold uppercase tracking-widest text-foreground">
+      EVIDENCIA FOTOGRÁFICA
+    </p>
+
+    <p className="mt-1 text-xs text-muted-foreground">
+      Agrega fotografías de la labor para incluirlas en el PDF.
+    </p>
+  </div>
+
+  <div className="grid grid-cols-2 gap-3">
+    <label className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-3 text-sm font-bold uppercase text-primary-foreground">
+      <Camera className="size-5" />
+      Tomar foto
+
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={(e) => {
+          addPhotos(e.target.files);
+          e.currentTarget.value = "";
+        }}
+      />
+    </label>
+
+    <label className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-input bg-secondary px-3 text-sm font-bold uppercase text-foreground">
+      <ImagePlus className="size-5" />
+      Galería
+
+      <input
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={(e) => {
+          addPhotos(e.target.files);
+          e.currentTarget.value = "";
+        }}
+      />
+    </label>
+  </div>
+
+  {photos.length > 0 && (
+    <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {photos.map((photo, index) => (
+        <div
+          key={index}
+          className="relative overflow-hidden rounded-lg border-2 border-border bg-secondary"
+        >
+          <img
+            src={photo}
+            alt={`Evidencia ${index + 1}`}
+            className="aspect-square w-full object-cover"
+          />
+
+          <button
+            type="button"
+            onClick={() => removePhoto(index)}
+            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-destructive text-white shadow-lg"
+            aria-label={`Eliminar foto ${index + 1}`}
+          >
+            <X className="size-4" />
+          </button>
+
+          <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 text-center text-xs font-bold text-white">
+            Foto {index + 1}
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
           <button
             onClick={copyReport}
             className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary font-display text-xl font-bold uppercase tracking-wider text-primary-foreground transition-all hover:brightness-110"
