@@ -311,6 +311,19 @@ const reset = () => {
   <div className="grid grid-cols-2 gap-3 pt-3 pb-4">
   <div>
     <label className="mb-1 block text-sm font-extrabold uppercase tracking-wide text-foreground">
+      Nivel
+    </label>
+    <input
+      type="text"
+      value={nivel}
+      onChange={(e) => setNivel(e.target.value)}
+      placeholder="Ingrese nivel"
+      className="h-12 w-full rounded-lg border-2 border-input bg-secondary px-3 text-base font-semibold text-foreground outline-none focus:border-primary"
+    />
+  </div>
+
+  <div>
+    <label className="mb-1 block text-sm font-extrabold uppercase tracking-wide text-foreground">
       Labor
     </label>
     <input
@@ -321,8 +334,7 @@ const reset = () => {
       className="h-12 w-full rounded-lg border-2 border-input bg-secondary px-3 text-base font-semibold text-foreground outline-none focus:border-primary"
     />
   </div>
-
-  <div>
+</div>
     <label className="mb-1 block text-sm font-extrabold uppercase tracking-wide text-foreground">
       Nivel
     </label>
