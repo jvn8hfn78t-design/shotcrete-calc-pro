@@ -7,7 +7,6 @@ const R_REBOTE = 1.10;
 const R_RUGOSIDAD = 1.16;
 const FARC_DEFAULT = 0.90;
 
-const ESPESOR_BASE_M = 0.0508;
 const ESPESOR_SH_1_M = 0.0254;
 const ESPESOR_SH_2_M = 0.0508;
 const PULGADA_A_METROS = 0.0254;
@@ -163,7 +162,9 @@ const [calculated, setCalculated] = useState(false);
       : h.some((value) => value.trim() !== "") &&
         l.some((value) => value.trim() !== "");
 
-  const valid = inputsComplete && errors.length === 0;
+  const espesorValido = mode !== "avance" || parse(espesor) > 0;
+
+const valid = inputsComplete && errors.length === 0 && espesorValido;
 
   const r = useMemo(() => {
     const H = average(h);
@@ -172,10 +173,12 @@ const L = average(l);
     if (mode === "avance") {
       const P = 2 * H + A;
       const area = P * L;
-      const vBase =
+      const espesorM = parse(espesor) * PULGADA_A_METROS;
+
+const vBase =
   R_REBOTE *
   R_RUGOSIDAD *
-  ESPESOR_BASE_M *
+  espesorM *
   L *
   P *
   FARC_DEFAULT;
@@ -214,7 +217,7 @@ const filas = H < 1.9 ? 1 : Math.floor(H);
 const calib = H <= 0 || L <= 0 ? 0 : filas * Math.ceil(Math.max(L - 1, 0));
 const P = 2 * H;
 return { P, area, vResane, calib, filas };
-  }, [mode, h, a, l]);
+  }, [mode, h, a, l, espesor]);
 
   const shown = calculated && valid ? r : null;
 
@@ -248,6 +251,7 @@ const reset = () => {
   setL([""]);
   setLabor("");
   setNivel("");
+  setEspesor("2");
   setCalculated(false);
   toast.success("Campos limpiados");
 };
@@ -261,7 +265,8 @@ const reset = () => {
 `Labor: ${labor}`,
 `Nivel: ${nivel}`,
 `H: ${h} m | A: ${a} m | L: ${l} m`,
-            `Perímetro: ${fmt2(shown.P)} m`,
+`Espesor: ${espesor}"`,
+`Perímetro: ${fmt2(shown.P)} m`,
             `Área: ${fmt2(shown.area)} m²`,
             `Volumen contractual: ${fmt(shown.vContract ?? 0)} m³`,
             `Volumen real 1": ${fmt(shown.vReal1 ?? 0)} m³`,
@@ -643,11 +648,11 @@ const reset = () => {
           )}
           {mode === "avance" && (
             <p className="mt-3 text-xs text-muted-foreground">
-              Desglose: V_base = Rb × R × e × L × P × Fc ={" "}
-              {fmt(shown.vBase)} m³ · Contrato = V_base +{" "}
-              {SOBREESPESOR_CONTRACTUAL.toFixed(2)} m³ · SH 1" ={" "}
-              {fmt(shown.sh1)} m³ · SH 2" = {fmt(shown.sh2)} m³
-            </p>
+  Desglose: V_base = Rb × R × e × L × P × Fc ={" "}
+  {fmt(shown.vBase)} m³ · e = {espesor}" · Contrato = V_base +{" "}
+  {SOBREESPESOR_CONTRACTUAL.toFixed(2)} m³ · SH 1" ={" "}
+  {fmt(shown.sh1)} m³ · SH 2" = {fmt(shown.sh2)} m³
+</p>
           )}
           {/* Verification table */}
           <div className="mt-6 overflow-x-auto rounded-lg border border-border">
