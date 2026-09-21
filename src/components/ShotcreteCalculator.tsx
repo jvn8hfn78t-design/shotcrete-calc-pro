@@ -486,7 +486,7 @@ const reset = () => {
     highlight
   />
   <ResultCard
-    label="M³ Labor 1"
+    label="M³ Labor"
     value={fmt(shown.vReal1)}
     unit="m³"
     highlight
@@ -500,7 +500,7 @@ const reset = () => {
     highlight
   />
   <ResultCard
-    label="M³ Labor 2"
+    label="M³ Labor"
     value={fmt(shown.vReal2)}
     unit="m³"
     highlight
