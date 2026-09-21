@@ -10,6 +10,7 @@ const FARC_DEFAULT = 0.90;
 const ESPESOR_BASE_M = 0.0508;
 const ESPESOR_SH_1_M = 0.0254;
 const ESPESOR_SH_2_M = 0.0508;
+const PULGADA_A_METROS = 0.0254;
 const SOBREESPESOR_CONTRACTUAL = 0.2;
 
 const RESANE_RENDIMIENTO = 11.5;
@@ -127,6 +128,7 @@ const [a, setA] = useState<string[]>([""]);
 const [l, setL] = useState<string[]>([""]);
 const [labor, setLabor] = useState("");
 const [nivel, setNivel] = useState("");
+const [espesor, setEspesor] = useState("2");
 const [copied, setCopied] = useState(false);
 const [calculated, setCalculated] = useState(false);
 
