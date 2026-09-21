@@ -500,8 +500,23 @@ const reset = () => {
     Promedio L: {average(l).toFixed(2)} m
   </p>
 </div>
+<div className="px-4 pb-4 pt-2 sm:px-6">
+  <label className="mb-2 block text-sm font-extrabold uppercase tracking-widest text-foreground">
+    ESPESOR <span className="text-steel">(pulg)</span>
+  </label>
+
+  <input
+    type="number"
+    inputMode="decimal"
+    min="0"
+    step="0.1"
+    value={espesor}
+    onChange={(e) => setEspesor(e.target.value)}
+    className="h-14 w-full rounded-lg border-2 border-input bg-secondary px-4 text-2xl font-bold tabular-nums text-foreground outline-none focus:border-primary"
+  />
+</div>
+
 <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
-      <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
   <button
     onClick={calculate}
     className="flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary font-bold uppercase tracking-wide text-primary-foreground transition-colors hover:brightness-110 sm:w-auto sm:px-8"
