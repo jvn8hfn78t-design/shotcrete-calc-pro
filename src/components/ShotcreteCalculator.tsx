@@ -648,7 +648,7 @@ if (mode === "avance") {
   );
 
   pdf.text(
-    'SACRIFICIO 1"',
+    'SH SACRIFICIO 1"',
     margin + 3,
     y + 5
   );
@@ -716,7 +716,7 @@ if (mode === "avance") {
   );
 
   pdf.text(
-    'SACRIFICIO 2"',
+    'SH SACRIFICIO 2"',
     margin + 3,
     y + 5
   );
