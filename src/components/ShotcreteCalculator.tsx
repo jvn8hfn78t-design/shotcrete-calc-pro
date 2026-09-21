@@ -1457,6 +1457,7 @@ Fecha: ${date}`;
     className="h-12 w-24 rounded-lg border-2 border-input bg-secondary px-3 text-center text-xl font-bold tabular-nums text-foreground outline-none focus:border-primary"
   />
 </div>
+</div>
 )}
 
 <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
