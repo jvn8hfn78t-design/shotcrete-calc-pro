@@ -206,10 +206,11 @@ const vReal2 = vBase + sh2;
       return { P, area, vBase, vContract, sh1, sh2, vReal1, vReal2, calib };
     }
     const area = H * L;
-    const vResane = area / RESANE_RENDIMIENTO;
-    const filas = H < 1.9 ? 1 : Math.floor(H);
-    const calib = H <= 0 || L <= 0 ? 0 : filas * Math.ceil(Math.max(L - 1, 0));
-    return { P: parse(perimetro), area, vResane, calib, filas };
+const vResane = area / RESANE_RENDIMIENTO;
+const filas = H < 1.9 ? 1 : Math.floor(H);
+const calib = H <= 0 || L <= 0 ? 0 : filas * Math.ceil(Math.max(L - 1, 0));
+const P = 2 * H;
+return { P, area, vResane, calib, filas };
   }, [mode, h, a, l, perimetro]);
 
   const shown = calculated && valid ? r : null;
@@ -345,7 +346,7 @@ const reset = () => {
 </p>
         </div>
 
-        {mode === "avance" ? (
+                {mode === "avance" ? (
           <div>
             <div className="mb-2 flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
@@ -359,38 +360,36 @@ const reset = () => {
                 +
               </button>
             </div>
-
             <div className="space-y-2">
-  {a.map((value, index) => (
-    <div key={index} className="flex gap-2">
-      <Field
-        fieldKey="a"
-        value={value}
-        onChange={(v) =>
-          setA((values) =>
-            values.map((item, i) => (i === index ? v : item))
-          )
-        }
-      />
-      {a.length > 1 && (
-        <button
-          type="button"
-          onClick={() => removeMeasurement(setA, index)}
-          className="mt-0 h-16 w-10 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
-        >
-          −
-        </button>
-      )}
-    </div>
-  ))}
-</div>
-
-<p className="mt-2 text-xs font-bold text-muted-foreground">
-  Promedio A: {average(a).toFixed(2)} m
-</p>
+              {a.map((value, index) => (
+                <div key={index} className="flex gap-2">
+                  <Field
+                    fieldKey="a"
+                    value={value}
+                    onChange={(v) =>
+                      setA((values) =>
+                        values.map((item, i) => (i === index ? v : item))
+                      )
+                    }
+                  />
+                  {a.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeMeasurement(setA, index)}
+                      className="mt-0 h-16 w-10 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+                    >
+                      −
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-xs font-bold text-muted-foreground">
+              Promedio A: {average(a).toFixed(2)} m
+            </p>
           </div>
         ) : (
-          <Field fieldKey="p" value={perimetro} onChange={setPerimetro} />
+          <div />
         )}
 
         <div>
