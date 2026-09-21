@@ -1230,7 +1230,15 @@ Fecha: ${date}`;
   return (
     <div className="overflow-hidden rounded-2xl border-2 border-border bg-card shadow-2xl">
       <div className="hazard-stripes h-3" />
+      <div className="px-4 py-4 text-center sm:px-6">
+  <h1 className="text-2xl font-black uppercase tracking-wider text-foreground">
+    SHOTCRETE CALC PRO
+  </h1>
 
+  <p className="mt-1 text-sm font-extrabold uppercase tracking-[0.25em] text-muted-foreground">
+    UM CHUNGAR
+  </p>
+</div>
       {/* Mode switcher */}
 <div className="px-4 pt-4 sm:px-6 sm:pt-6">
   <p className="mb-2 text-sm font-extrabold uppercase tracking-widest text-foreground">
