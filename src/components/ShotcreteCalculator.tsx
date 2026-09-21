@@ -322,35 +322,35 @@ const reset = () => {
     </button>
   </div>
 
-  <div className="space-y-2">
+  <div className="space-y-3">
     {h.map((value, index) => (
-      <div key={index} className="flex gap-2">
-        <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">
-            H{index + 1}
+      <div key={index}>
+        <div className="mb-1 flex items-center justify-between">
+          <span className="text-xs font-bold text-muted-foreground">
+            ALTURA {index + 1} (H{index + 1})
           </span>
 
-          <Field
-            fieldKey="h"
-            value={value}
-            onChange={(v) =>
-              setH((values) =>
-                values.map((item, i) => (i === index ? v : item))
-              )
-            }
-          />
+          {h.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeMeasurement(setH, index)}
+              className="flex h-8 w-8 items-center justify-center rounded-md border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+              aria-label={`Eliminar H${index + 1}`}
+            >
+              −
+            </button>
+          )}
         </div>
 
-        {h.length > 1 && (
-          <button
-            type="button"
-            onClick={() => removeMeasurement(setH, index)}
-            className="h-16 w-12 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
-            aria-label={`Eliminar H${index + 1}`}
-          >
-            🗑️
-          </button>
-        )}
+        <Field
+          fieldKey="h"
+          value={value}
+          onChange={(v) =>
+            setH((values) =>
+              values.map((item, i) => (i === index ? v : item))
+            )
+          }
+        />
       </div>
     ))}
   </div>
@@ -376,35 +376,35 @@ const reset = () => {
       </button>
     </div>
 
-    <div className="space-y-2">
+    <div className="space-y-3">
       {a.map((value, index) => (
-        <div key={index} className="flex gap-2">
-          <div className="relative flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">
-              A{index + 1}
+        <div key={index}>
+          <div className="mb-1 flex items-center justify-between">
+            <span className="text-xs font-bold text-muted-foreground">
+              ANCHO {index + 1} (A{index + 1})
             </span>
 
-            <Field
-              fieldKey="a"
-              value={value}
-              onChange={(v) =>
-                setA((values) =>
-                  values.map((item, i) => (i === index ? v : item))
-                )
-              }
-            />
+            {a.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeMeasurement(setA, index)}
+                className="flex h-8 w-8 items-center justify-center rounded-md border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+                aria-label={`Eliminar A${index + 1}`}
+              >
+                −
+              </button>
+            )}
           </div>
 
-          {a.length > 1 && (
-            <button
-              type="button"
-              onClick={() => removeMeasurement(setA, index)}
-              className="h-16 w-12 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
-              aria-label={`Eliminar A${index + 1}`}
-            >
-              🗑️
-            </button>
-          )}
+          <Field
+            fieldKey="a"
+            value={value}
+            onChange={(v) =>
+              setA((values) =>
+                values.map((item, i) => (i === index ? v : item))
+              )
+            }
+          />
         </div>
       ))}
     </div>
@@ -432,35 +432,35 @@ const reset = () => {
     </button>
   </div>
 
-  <div className="space-y-2">
+  <div className="space-y-3">
     {l.map((value, index) => (
-      <div key={index} className="flex gap-2">
-        <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">
-            L{index + 1}
+      <div key={index}>
+        <div className="mb-1 flex items-center justify-between">
+          <span className="text-xs font-bold text-muted-foreground">
+            AVANCE {index + 1} (L{index + 1})
           </span>
 
-          <Field
-            fieldKey="l"
-            value={value}
-            onChange={(v) =>
-              setL((values) =>
-                values.map((item, i) => (i === index ? v : item))
-              )
-            }
-          />
+          {l.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeMeasurement(setL, index)}
+              className="flex h-8 w-8 items-center justify-center rounded-md border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+              aria-label={`Eliminar L${index + 1}`}
+            >
+              −
+            </button>
+          )}
         </div>
 
-        {l.length > 1 && (
-          <button
-            type="button"
-            onClick={() => removeMeasurement(setL, index)}
-            className="h-16 w-12 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
-            aria-label={`Eliminar L${index + 1}`}
-          >
-            🗑️
-          </button>
-        )}
+        <Field
+          fieldKey="l"
+          value={value}
+          onChange={(v) =>
+            setL((values) =>
+              values.map((item, i) => (i === index ? v : item))
+            )
+          }
+        />
       </div>
     ))}
   </div>
@@ -469,7 +469,6 @@ const reset = () => {
     Promedio L: {average(l).toFixed(2)} m
   </p>
 </div>
-      </div>
 
       <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
   <button
