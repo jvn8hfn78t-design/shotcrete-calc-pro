@@ -82,10 +82,7 @@ function Field({ fieldKey, value, onChange }: FieldProps) {
         value={value}
         placeholder="0.00"
         aria-invalid={!!error}
-        onChange={(e) => {
-  onChange(e.target.value);
-  invalidateCalculation();
-}}
+        onChange={(e) => onChange(e.target.value)}
         className={`h-12 w-full rounded-lg border-2 bg-secondary px-3 text-2xl font-bold tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground/40 ${
           error ? "border-destructive" : "border-input focus:border-primary"
         }`}
@@ -360,6 +357,7 @@ const addMeasurement = (
   setter: React.Dispatch<React.SetStateAction<string[]>>
 ) => {
   setter((values) => [...values, ""]);
+  invalidateCalculation();
 };
 
 const removeMeasurement = (
@@ -370,6 +368,7 @@ const removeMeasurement = (
     if (values.length === 1) return values;
     return values.filter((_, i) => i !== index);
   });
+  invalidateCalculation();
 };
 
 const invalidateCalculation = () => {
@@ -1422,14 +1421,15 @@ Fecha: ${date}`;
         <div className="flex items-center gap-2">
           <div className="w-full max-w-xs">
             <Field
-              fieldKey="h"
-              value={value}
-              onChange={(v) =>
-                setH((values) =>
-                  values.map((item, i) => (i === index ? v : item))
-                )
-              }
-            />
+  fieldKey="h"
+  value={value}
+  onChange={(v) => {
+    setH((values) =>
+      values.map((item, i) => (i === index ? v : item))
+    );
+    invalidateCalculation();
+  }}
+/>
           </div>
 
           {h.length > 1 && (
@@ -1479,14 +1479,15 @@ Fecha: ${date}`;
         <div className="flex items-center gap-2">
           <div className="w-full max-w-xs">
             <Field
-              fieldKey="a"
-              value={value}
-              onChange={(v) =>
-                setA((values) =>
-                  values.map((item, i) => (i === index ? v : item))
-                )
-              }
-            />
+  fieldKey="a"
+  value={value}
+  onChange={(v) => {
+    setA((values) =>
+      values.map((item, i) => (i === index ? v : item))
+    );
+    invalidateCalculation();
+  }}
+/>
           </div>
 
           {a.length > 1 && (
@@ -1539,14 +1540,15 @@ Fecha: ${date}`;
         <div className="flex items-center gap-2">
           <div className="w-full max-w-xs">
             <Field
-              fieldKey="l"
-              value={value}
-              onChange={(v) =>
-                setL((values) =>
-                  values.map((item, i) => (i === index ? v : item))
-                )
-              }
-            />
+  fieldKey="l"
+  value={value}
+  onChange={(v) => {
+    setL((values) =>
+      values.map((item, i) => (i === index ? v : item))
+    );
+    invalidateCalculation();
+  }}
+/>
           </div>
 
           {l.length > 1 && (
