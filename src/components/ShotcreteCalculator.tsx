@@ -514,8 +514,6 @@ const reset = () => {
   </button>
 </div>
 
-</div>
-
             {/* Results */}
       {shown && (
         <div className="border-t-2 border-border bg-background/60 px-4 py-6 sm:px-6">
