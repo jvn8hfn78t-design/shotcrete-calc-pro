@@ -170,9 +170,12 @@ const sh2 =
 
 const vReal1 = vBase + sh1;
 const vReal2 = vBase + sh2;
-      const Fc = parse(fc) || FC_DEFAULT;
       const calib =
-        H <= 0 ? 0 : H > 4.2 ? Math.round((H - 1) * 2 * 2) : Math.ceil(P * Fc - 1) * 2;
+  H <= 0
+    ? 0
+    : H > 4.2
+      ? Math.round((H - 1) * 2 * 2)
+      : Math.ceil(P * FC_DEFAULT - 1) * 2;
       return { P, area, vBase, vContract, sh1, sh2, vReal1, vReal2, calib };
     }
     const area = H * L;
@@ -180,7 +183,7 @@ const vReal2 = vBase + sh2;
     const filas = H < 1.9 ? 1 : Math.floor(H);
     const calib = H <= 0 || L <= 0 ? 0 : filas * Math.ceil(Math.max(L - 1, 0));
     return { P: parse(perimetro), area, vResane, calib, filas };
-  }, [mode, h, a, l, perimetro, fc]);
+  }, [mode, h, a, l, perimetro]);
 
   const shown = calculated && valid ? r : null;
 
@@ -264,25 +267,6 @@ const reset = () => {
         )}
         <Field fieldKey="l" value={l} onChange={setL} />
       </div>
-
-      {mode === "avance" && (
-        <div className="flex items-center gap-3 px-4 pb-2 sm:px-6">
-          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-            Factor Fc (calibradores)
-          </label>
-          <input
-            type="number"
-            inputMode="decimal"
-            step="0.05"
-            min="0.1"
-            max="2"
-            value={fc}
-            onChange={(e) => setFc(e.target.value)}
-            className="h-10 w-24 rounded-md border-2 border-input bg-secondary px-3 text-center font-bold tabular-nums text-foreground outline-none focus:border-primary"
-          />
-          <span className="text-xs text-muted-foreground">estándar: {FC_DEFAULT}</span>
-        </div>
-      )}
 
       <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
   <button
