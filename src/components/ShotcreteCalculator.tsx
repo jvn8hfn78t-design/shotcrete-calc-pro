@@ -1270,7 +1270,7 @@ Fecha: ${date}`;
         type="text"
         value={nivel}
         onChange={(e) => setNivel(e.target.value)}
-        placeholder="NV - 120"
+        placeholder=""
         className="h-12 w-full rounded-lg border-2 border-input bg-secondary px-3 text-base font-semibold text-foreground outline-none focus:border-primary"
       />
     </div>
@@ -1284,7 +1284,7 @@ Fecha: ${date}`;
         type="text"
         value={labor}
         onChange={(e) => setLabor(e.target.value)}
-        placeholder="RB - 074"
+        placeholder=""
         className="h-12 w-full rounded-lg border-2 border-input bg-secondary px-3 text-base font-semibold text-foreground outline-none focus:border-primary"
       />
     </div>
