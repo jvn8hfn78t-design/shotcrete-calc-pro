@@ -268,32 +268,43 @@ const reset = () => {
   toast.success("Campos limpiados");
 };
 
-  const copyReport = async () => {
+    const copyReport = async () => {
     if (!shown) return;
+
     const lines =
       mode === "avance"
         ? [
             "REPORTE SHOTCRETE — MODO AVANCE",
-`Labor: ${labor}`,
-`Nivel: ${nivel}`,
-`H: ${h} m | A: ${a} m | L: ${l} m`,
-`Espesor: ${espesor}"`,
-`Perímetro: ${fmt2(shown.P)} m`,
+            `Labor: ${labor}`,
+            `Nivel: ${nivel}`,
+            `H: ${h} m | A: ${a} m | L: ${l} m`,
+            `Espesor: ${espesor}"`,
+            `Perímetro: ${fmt2(shown.P)} m`,
             `Área: ${fmt2(shown.area)} m²`,
             `Volumen contractual: ${fmt(shown.vContract ?? 0)} m³`,
             `Volumen real 1": ${fmt(shown.vReal1 ?? 0)} m³`,
             `Volumen real 2": ${fmt(shown.vReal2 ?? 0)} m³`,
             `Calibradores: ${shown.calib} und`,
           ]
-        : [
-            "REPORTE SHOTCRETE — MODO RESANE",
-`Labor: ${labor}`,
-`Nivel: ${nivel}`,
-`H: ${h} m | L: ${l} m`,
-            `Área: ${fmt2(shown.area)} m²`,
-            `Volumen de resane: ${fmt2(shown.vResane ?? 0)} m³`,
-            `Calibradores: ${shown.calib} und`,
-          ];
+        : mode === "malla"
+          ? [
+              "REPORTE SHOTCRETE — MODO MALLA",
+              `Labor: ${labor}`,
+              `Nivel: ${nivel}`,
+              `H: ${h} m | A: ${a} m | L: ${l} m`,
+              `Perímetro: ${fmt2(shown.P)} m`,
+              `Área: ${fmt2(shown.area)} m²`,
+              `Volumen de malla: ${fmt(shown.vMalla ?? 0, 2)} m³`,
+            ]
+          : [
+              "REPORTE SHOTCRETE — MODO RESANE",
+              `Labor: ${labor}`,
+              `Nivel: ${nivel}`,
+              `H: ${h} m | L: ${l} m`,
+              `Área: ${fmt2(shown.area)} m²`,
+              `Volumen de resane: ${fmt2(shown.vResane ?? 0)} m³`,
+              `Calibradores: ${shown.calib} und`,
+            ];
     try {
       await navigator.clipboard.writeText(lines.join("\n"));
       setCopied(true);
