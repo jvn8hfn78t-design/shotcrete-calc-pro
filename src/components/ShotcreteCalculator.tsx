@@ -60,13 +60,10 @@ interface FieldProps {
 }
 
 function Field({ fieldKey, value, onChange }: FieldProps) {
-  const { label } = RANGES[fieldKey];
   const error = fieldError(fieldKey, value);
+
   return (
     <label className="block">
-      <span className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground">
-        {label} <span className="text-steel">(m)</span>
-      </span>
       <input
         type="number"
         inputMode="decimal"
@@ -80,6 +77,7 @@ function Field({ fieldKey, value, onChange }: FieldProps) {
           error ? "border-destructive" : "border-input focus:border-primary"
         }`}
       />
+
       {error && (
         <span className="mt-1.5 flex items-center gap-1.5 text-xs font-semibold text-destructive">
           <AlertTriangle className="size-3.5 shrink-0" /> {error}
