@@ -102,24 +102,37 @@ function ResultCard({
   value,
   unit,
   highlight = false,
+  mediumHighlight = false,
 }: {
   label: string;
   value: string;
   unit: string;
   highlight?: boolean;
+  mediumHighlight?: boolean;
 }) {
   return (
     <div
       className={`rounded-xl border-2 p-3 sm:p-5 ${
-        highlight ? "border-primary bg-primary/10" : "border-border bg-secondary"
-      }`}
-    >
+  highlight
+    ? "border-primary bg-primary/10"
+    : mediumHighlight
+      ? "border-primary/50 bg-primary/5"
+      : "border-border bg-secondary"
+}`}
       <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
         {label}
       </p>
 
       <p className="mt-2 font-display text-3xl font-bold tabular-nums leading-none sm:text-5xl">
-        <span className={highlight ? "text-primary" : "text-foreground"}>
+        <span
+  className={
+    highlight
+      ? "text-primary"
+      : mediumHighlight
+        ? "text-primary/80"
+        : "text-foreground"
+  }
+>
           {value}
         </span>{" "}
         <span className="text-lg font-semibold text-muted-foreground">
@@ -1549,7 +1562,6 @@ Fecha: ${date}`;
     label="Volumen según contrato"
     value={fmt(shown.vContract)}
     unit="m³"
-    highlight
   />
 </div>
 
@@ -1561,10 +1573,11 @@ Fecha: ${date}`;
 
   <div className="grid grid-cols-2 gap-3">
     <ResultCard
-      label='SH SACRIFICIO 1"'
-      value={fmt(shown.sh1)}
-      unit="m³"
-    />
+  label='SH SACRIFICIO 1"'
+  value={fmt(shown.sh1)}
+  unit="m³"
+  mediumHighlight
+/>
 
     <ResultCard
       label='M³ LABOR'
@@ -1583,10 +1596,11 @@ Fecha: ${date}`;
 
   <div className="grid grid-cols-2 gap-3">
     <ResultCard
-      label='SH SACRIFICIO 2"'
-      value={fmt(shown.sh2)}
-      unit="m³"
-    />
+  label='SH SACRIFICIO 2"'
+  value={fmt(shown.sh2)}
+  unit="m³"
+  mediumHighlight
+/>
 
     <ResultCard
       label='M³ LABOR"'
