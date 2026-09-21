@@ -132,7 +132,7 @@ const [espesor, setEspesor] = useState("2");
 const [copied, setCopied] = useState(false);
 const [calculated, setCalculated] = useState(false);
 
-    const errors = useMemo(() => {
+      const errors = useMemo(() => {
     const list: string[] = [];
 
     h.forEach((value, index) => {
@@ -145,7 +145,7 @@ const [calculated, setCalculated] = useState(false);
       if (error) list.push(`Avance ${index + 1}: ${error}`);
     });
 
-    if (mode === "avance") {
+    if (mode === "avance" || mode === "malla") {
       a.forEach((value, index) => {
         const error = fieldError("a", value);
         if (error) list.push(`Ancho ${index + 1}: ${error}`);
@@ -156,12 +156,12 @@ const [calculated, setCalculated] = useState(false);
   }, [mode, h, a, l]);
 
   const inputsComplete =
-    mode === "avance"
-      ? h.some((value) => value.trim() !== "") &&
-        a.some((value) => value.trim() !== "") &&
-        l.some((value) => value.trim() !== "")
-      : h.some((value) => value.trim() !== "") &&
-        l.some((value) => value.trim() !== "");
+  mode === "avance" || mode === "malla"
+    ? h.some((value) => value.trim() !== "") &&
+      a.some((value) => value.trim() !== "") &&
+      l.some((value) => value.trim() !== "")
+    : h.some((value) => value.trim() !== "") &&
+      l.some((value) => value.trim() !== "");
 
   const espesorValido = mode !== "avance" || parse(espesor) > 0;
 
@@ -212,6 +212,17 @@ const vReal2 = vBase + sh2;
       : Math.ceil(P * FARC_DEFAULT - 1) * 2;
       return { P, area, vBase, vContract, sh1, sh2, vReal1, vReal2, calib };
     }
+if (mode === "malla") {
+  const P = ((2 * H) + A) * FARC_DEFAULT;
+  const area = L * P;
+  const vMalla = area / MALLA_RENDIMIENTO;
+
+  return {
+    P,
+    area,
+    vMalla,
+  };
+}
     const area = H * L;
 const vResane = area / RESANE_RENDIMIENTO;
 const filas = H < 1.9 ? 1 : Math.floor(H);
@@ -397,12 +408,12 @@ const reset = () => {
   </p>
 </div>
 
-                {mode === "avance" ? (
+                {mode === "avance" || mode === "malla" ? (
   <div>
     <div className="mb-2 flex items-center justify-between">
       <span className="text-sm font-extrabold uppercase tracking-widest text-foreground">
-  ANCHO (A) <span className="text-steel">(m)</span>
-</span>
+        ANCHO (A) <span className="text-steel">(m)</span>
+      </span>
 
       <button
         type="button"
@@ -506,6 +517,7 @@ const reset = () => {
     Promedio L: {average(l).toFixed(2)} m
   </p>
 </div>
+{mode === "avance" && (
 <div className="px-4 pb-4 pt-2 sm:px-6">
   <label className="mb-2 block text-sm font-extrabold uppercase tracking-widest text-foreground">
     ESPESOR <span className="text-steel">(pulg)</span>
@@ -521,6 +533,7 @@ const reset = () => {
     className="h-14 w-full rounded-lg border-2 border-input bg-secondary px-4 text-2xl font-bold tabular-nums text-foreground outline-none focus:border-primary"
   />
 </div>
+)}
 
 <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
   <button
@@ -621,32 +634,53 @@ const reset = () => {
   />
 </div>
 </div>
-          ) : (
+                                        ) : mode === "malla" ? (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
               <ResultCard
                 label="Perímetro"
                 value={fmt2(shown.P)}
                 unit="m"
               />
+
               <ResultCard
                 label="Área"
                 value={fmt2(shown.area)}
                 unit="m²"
               />
+
               <ResultCard
-                label="Vol. resane"
-                value={fmt2(shown.vResane)}
+                label="Vol. Malla"
+                value={fmt(shown.vMalla, 2)}
                 unit="m³"
                 highlight
               />
-              <ResultCard
-                label="Calibradores"
-                value={`${shown.calib}`}
-                unit="und"
-                highlight
-              />
             </div>
-          )}
+            ) : (
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                <ResultCard
+                  label="Perímetro"
+                  value={fmt2(shown.P)}
+                  unit="m"
+                />
+                <ResultCard
+                  label="Área"
+                  value={fmt2(shown.area)}
+                  unit="m²"
+                />
+                <ResultCard
+                  label="Vol. resane"
+                  value={fmt2(shown.vResane)}
+                  unit="m³"
+                  highlight
+                />
+                <ResultCard
+                  label="Calibradores"
+                  value={`${shown.calib}`}
+                  unit="und"
+                  highlight
+                />
+              </div>
+            )}
           {mode === "avance" && (
             <p className="mt-3 text-xs text-muted-foreground">
   Desglose: V_base = Rb × R × e × L × P × Fc ={" "}
@@ -684,7 +718,7 @@ const reset = () => {
                     m²
                   </td>
                 </tr>
-                {mode === "avance" ? (
+                                {mode === "avance" ? (
                   <>
                     <tr className="border-t border-border bg-primary/5">
                       <td className="px-4 py-2.5">
@@ -697,6 +731,7 @@ const reset = () => {
                         m³
                       </td>
                     </tr>
+
                     <tr className="border-t border-border">
                       <td className="px-4 py-2.5">
                         SH SACRIFICIO 1"
@@ -708,6 +743,7 @@ const reset = () => {
                         m³
                       </td>
                     </tr>
+
                     <tr className="border-t border-border">
                       <td className="px-4 py-2.5">
                         M³ Labor 1
@@ -719,6 +755,7 @@ const reset = () => {
                         m³
                       </td>
                     </tr>
+
                     <tr className="border-t border-border">
                       <td className="px-4 py-2.5">
                         SH SACRIFICIO 2"
@@ -730,6 +767,7 @@ const reset = () => {
                         m³
                       </td>
                     </tr>
+
                     <tr className="border-t border-border">
                       <td className="px-4 py-2.5">
                         M³ Labor 2
@@ -741,6 +779,46 @@ const reset = () => {
                         m³
                       </td>
                     </tr>
+                  </>
+                ) : mode === "malla" ? (
+                  <tr className="border-t border-border bg-primary/5">
+                    <td className="px-4 py-2.5">
+                      Volumen de malla (Área / 21)
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-bold text-primary">
+                      {fmt(shown.vMalla, 2)}
+                    </td>
+                    <td className="px-4 py-2.5 text-right text-muted-foreground">
+                      m³
+                    </td>
+                  </tr>
+                ) : (
+                  <tr className="border-t border-border bg-primary/5">
+                    <td className="px-4 py-2.5">
+                      Volumen de resane (Área / 11.5)
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-bold text-primary">
+                      {fmt2(shown.vResane)}
+                    </td>
+                    <td className="px-4 py-2.5 text-right text-muted-foreground">
+                      m³
+                    </td>
+                  </tr>
+                )}
+
+                {mode !== "malla" && (
+                  <tr className="border-t border-border bg-primary/5">
+                    <td className="px-4 py-2.5">
+                      Calibradores
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-bold text-primary">
+                      {shown.calib}
+                    </td>
+                    <td className="px-4 py-2.5 text-right text-muted-foreground">
+                      und
+                    </td>
+                  </tr>
+                )}
                   </>
                 ) : (
                   <tr className="border-t border-border bg-primary/5">
