@@ -484,9 +484,11 @@ const reset = () => {
             {/* Results */}
       {shown && (
         <div className="border-t-2 border-border bg-background/60 px-4 py-6 sm:px-6">
-          <p className="mb-4 text-xs font-bold uppercase tracking-[0.25em] text-muted-foreground">
-            Resultados
-          </p>
+          <div className="mb-5 border-b-2 border-primary/30 pb-3">
+  <p className="text-lg font-bold uppercase tracking-[0.25em] text-primary">
+    Resultados
+  </p>
+</div>
           {mode === "avance" ? (
             <div className="space-y-3">
   {/* Fila 1: datos generales */}
@@ -548,15 +550,19 @@ const reset = () => {
   />
 </div>
 
-  {/* Fila 4: calibradores */}
-  <div className="grid grid-cols-2 gap-2">
-    <ResultCard
-      label="Calibradores"
-      value={`${shown.calib}`}
-      unit="und"
-      highlight
-    />
-  </div>
+  {/* Calibradores */}
+<p className="pt-3 text-sm font-bold uppercase tracking-widest text-primary">
+  Calibradores
+</p>
+
+<div className="grid grid-cols-2 gap-2">
+  <ResultCard
+    label="Calibradores"
+    value={`${shown.calib}`}
+    unit="und"
+    highlight
+  />
+</div>
 </div>
           ) : (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
