@@ -112,34 +112,35 @@ function ResultCard({
 }) {
   return (
     <div
-      className={`rounded-xl border-2 p-3 sm:p-5 ${
-  highlight
-    ? "border-primary bg-primary/10"
-    : mediumHighlight
-      ? "border-primary/50 bg-primary/5"
-      : "border-border bg-secondary"
-}`}
-      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-        {label}
-      </p>
-
-      <p className="mt-2 font-display text-3xl font-bold tabular-nums leading-none sm:text-5xl">
-        <span
-  className={
+  className={`rounded-xl border-2 p-3 sm:p-5 ${
     highlight
-      ? "text-primary"
+      ? "border-primary bg-primary/10"
       : mediumHighlight
-        ? "text-primary/80"
-        : "text-foreground"
-  }
+        ? "border-primary/50 bg-primary/5"
+        : "border-border bg-secondary"
+  }`}
 >
-          {value}
-        </span>{" "}
-        <span className="text-lg font-semibold text-muted-foreground">
-          {unit}
-        </span>
-      </p>
-    </div>
+  <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+    {label}
+  </p>
+
+  <p className="mt-2 font-display text-3xl font-bold tabular-nums leading-none sm:text-5xl">
+    <span
+      className={
+        highlight
+          ? "text-primary"
+          : mediumHighlight
+            ? "text-primary/80"
+            : "text-foreground"
+      }
+    >
+      {value}
+    </span>{" "}
+    <span className="text-lg font-semibold text-muted-foreground">
+      {unit}
+    </span>
+  </p>
+</div>
   );
 }
 
