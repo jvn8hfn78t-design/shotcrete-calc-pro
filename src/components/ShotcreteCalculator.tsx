@@ -454,133 +454,222 @@ const reset = () => {
   </button>
 </div>
 
-      {/* Results */}
-      <div className="border-t-2 border-border bg-background/60 px-4 py-6 sm:px-6">
-        <p className="mb-4 text-xs font-bold uppercase tracking-[0.25em] text-muted-foreground">
-          Resultados en tiempo real
-        </p>
-
-        {!valid && (
-          <p className="mb-4 rounded-lg border border-border bg-secondary px-4 py-3 text-sm text-muted-foreground">
-            {errors.length > 0
-              ? "Corrige los valores marcados para calcular."
-              : "Ingresa las medidas de la labor para ver los resultados al instante."}
+            {/* Results */}
+      {shown && (
+        <div className="border-t-2 border-border bg-background/60 px-4 py-6 sm:px-6">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[0.25em] text-muted-foreground">
+            Resultados
           </p>
-        )}
-
-        {mode === "avance" ? (
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-  <ResultCard label="Perímetro" value={fmt2(shown?.P ?? 0)} unit="m" />
-  <ResultCard label="Área" value={fmt2(shown?.area ?? 0)} unit="m²" />
-  <ResultCard label="Vol. contractual" value={fmt(shown?.vContract ?? 0)} unit="m³" highlight />
-  <ResultCard label='SH SACRIFICIO 1"' value={fmt(shown?.sh1 ?? 0)} unit="m³" highlight />
-  <ResultCard label="M³ Labor 1" value={fmt(shown?.vReal1 ?? 0)} unit="m³" highlight />
-  <ResultCard label='SH SACRIFICIO 2"' value={fmt(shown?.sh2 ?? 0)} unit="m³" highlight />
-  <ResultCard label="M³ Labor 2" value={fmt(shown?.vReal2 ?? 0)} unit="m³" highlight />
-  <ResultCard label="Calibradores" value={`${shown?.calib ?? 0}`} unit="und" highlight />
-</div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-            <ResultCard label="Perímetro" value={fmt2(shown?.P ?? 0)} unit="m" />
-            <ResultCard label="Área" value={fmt2(shown?.area ?? 0)} unit="m²" />
-            <ResultCard label="Vol. resane" value={fmt2(shown?.vResane ?? 0)} unit="m³" highlight />
-            <ResultCard label="Calibradores" value={`${shown?.calib ?? 0}`} unit="und" highlight />
-          </div>
-        )}
-
-        {mode === "avance" && shown && (
-          <p className="mt-3 text-xs text-muted-foreground">
-  Desglose: V_base = Rb × R × e × L × P × Fc = {fmt(shown.vBase ?? 0)} m³ ·
-  Contrato = V_base + {SOBREESPESOR_CONTRACTUAL.toFixed(2)} m³ ·
-  SH 1" = {fmt(shown.sh1 ?? 0)} m³ ·
-  SH 2" = {fmt(shown.sh2 ?? 0)} m³
-</p>
-        )}
-
-        {/* Verification table */}
-        <div className="mt-6 overflow-x-auto rounded-lg border border-border">
-          <table className="w-full min-w-[420px] text-left text-sm">
-            <thead>
-              <tr className="bg-secondary text-xs uppercase tracking-widest text-muted-foreground">
-                <th className="px-4 py-3">Concepto</th>
-                <th className="px-4 py-3 text-right">Valor</th>
-                <th className="px-4 py-3 text-right">Unidad</th>
-              </tr>
-            </thead>
-            <tbody className="tabular-nums">
-              <tr className="border-t border-border">
-                <td className="px-4 py-2.5">Perímetro</td>
-                <td className="px-4 py-2.5 text-right font-bold">{fmt2(shown?.P ?? 0)}</td>
-                <td className="px-4 py-2.5 text-right text-muted-foreground">m</td>
-              </tr>
-              <tr className="border-t border-border">
-                <td className="px-4 py-2.5">Área</td>
-                <td className="px-4 py-2.5 text-right font-bold">{fmt2(shown?.area ?? 0)}</td>
-                <td className="px-4 py-2.5 text-right text-muted-foreground">m²</td>
-              </tr>
-              {mode === "avance" ? (
-                <>
-                  <tr className="border-t border-border bg-primary/5">
-                    <td className="px-4 py-2.5">Volumen contractual</td>
-                    <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt(shown?.vContract ?? 0)}</td>
-                    <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
-                  </tr>
-                  <tr className="border-t border-border">
-  <td className="px-4 py-2.5">SH SACRIFICIO 1"</td>
-  <td className="px-4 py-2.5 text-right font-bold text-primary">
-    {fmt(shown?.sh1 ?? 0)}
-  </td>
-  <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
-</tr>
-
-<tr className="border-t border-border">
-  <td className="px-4 py-2.5">M³ Labor 1</td>
-  <td className="px-4 py-2.5 text-right font-bold text-primary">
-    {fmt(shown?.vReal1 ?? 0)}
-  </td>
-  <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
-</tr>
-
-<tr className="border-t border-border">
-  <td className="px-4 py-2.5">SH SACRIFICIO 2"</td>
-  <td className="px-4 py-2.5 text-right font-bold text-primary">
-    {fmt(shown?.sh2 ?? 0)}
-  </td>
-  <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
-</tr>
-
-<tr className="border-t border-border">
-  <td className="px-4 py-2.5">M³ Labor 2</td>
-  <td className="px-4 py-2.5 text-right font-bold text-primary">
-    {fmt(shown?.vReal2 ?? 0)}
-  </td>
-  <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
-</tr>
-                </>
-              ) : (
-                <tr className="border-t border-border bg-primary/5">
-                  <td className="px-4 py-2.5">Volumen de resane (Área / 11.5)</td>
-                  <td className="px-4 py-2.5 text-right font-bold text-primary">{fmt2(shown?.vResane ?? 0)}</td>
-                  <td className="px-4 py-2.5 text-right text-muted-foreground">m³</td>
+          {mode === "avance" ? (
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+              <ResultCard
+                label="Perímetro"
+                value={fmt2(shown.P)}
+                unit="m"
+              />
+              <ResultCard
+                label="Área"
+                value={fmt2(shown.area)}
+                unit="m²"
+              />
+              <ResultCard
+                label="Vol. contractual"
+                value={fmt(shown.vContract)}
+                unit="m³"
+                highlight
+              />
+              <ResultCard
+                label='SH SACRIFICIO 1"'
+                value={fmt(shown.sh1)}
+                unit="m³"
+                highlight
+              />
+              <ResultCard
+                label="M³ Labor 1"
+                value={fmt(shown.vReal1)}
+                unit="m³"
+                highlight
+              />
+              <ResultCard
+                label='SH SACRIFICIO 2"'
+                value={fmt(shown.sh2)}
+                unit="m³"
+                highlight
+              />
+              <ResultCard
+                label="M³ Labor 2"
+                value={fmt(shown.vReal2)}
+                unit="m³"
+                highlight
+              />
+              <ResultCard
+                label="Calibradores"
+                value={`${shown.calib}`}
+                unit="und"
+                highlight
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+              <ResultCard
+                label="Perímetro"
+                value={fmt2(shown.P)}
+                unit="m"
+              />
+              <ResultCard
+                label="Área"
+                value={fmt2(shown.area)}
+                unit="m²"
+              />
+              <ResultCard
+                label="Vol. resane"
+                value={fmt2(shown.vResane)}
+                unit="m³"
+                highlight
+              />
+              <ResultCard
+                label="Calibradores"
+                value={`${shown.calib}`}
+                unit="und"
+                highlight
+              />
+            </div>
+          )}
+          {mode === "avance" && (
+            <p className="mt-3 text-xs text-muted-foreground">
+              Desglose: V_base = Rb × R × e × L × P × Fc ={" "}
+              {fmt(shown.vBase)} m³ · Contrato = V_base +{" "}
+              {SOBREESPESOR_CONTRACTUAL.toFixed(2)} m³ · SH 1" ={" "}
+              {fmt(shown.sh1)} m³ · SH 2" = {fmt(shown.sh2)} m³
+            </p>
+          )}
+          {/* Verification table */}
+          <div className="mt-6 overflow-x-auto rounded-lg border border-border">
+            <table className="w-full min-w-[420px] text-left text-sm">
+              <thead>
+                <tr className="bg-secondary text-xs uppercase tracking-widest text-muted-foreground">
+                  <th className="px-4 py-3">Concepto</th>
+                  <th className="px-4 py-3 text-right">Valor</th>
+                  <th className="px-4 py-3 text-right">Unidad</th>
                 </tr>
-              )}
-              <tr className="border-t border-border bg-primary/5">
-                <td className="px-4 py-2.5">Calibradores (gauge pins)</td>
-                <td className="px-4 py-2.5 text-right font-bold text-primary">{shown?.calib ?? 0}</td>
-                <td className="px-4 py-2.5 text-right text-muted-foreground">und</td>
-              </tr>
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="tabular-nums">
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2.5">Perímetro</td>
+                  <td className="px-4 py-2.5 text-right font-bold">
+                    {fmt2(shown.P)}
+                  </td>
+                  <td className="px-4 py-2.5 text-right text-muted-foreground">
+                    m
+                  </td>
+                </tr>
+                <tr className="border-t border-border">
+                  <td className="px-4 py-2.5">Área</td>
+                  <td className="px-4 py-2.5 text-right font-bold">
+                    {fmt2(shown.area)}
+                  </td>
+                  <td className="px-4 py-2.5 text-right text-muted-foreground">
+                    m²
+                  </td>
+                </tr>
+                {mode === "avance" ? (
+                  <>
+                    <tr className="border-t border-border bg-primary/5">
+                      <td className="px-4 py-2.5">
+                        Volumen contractual
+                      </td>
+                      <td className="px-4 py-2.5 text-right font-bold text-primary">
+                        {fmt(shown.vContract)}
+                      </td>
+                      <td className="px-4 py-2.5 text-right text-muted-foreground">
+                        m³
+                      </td>
+                    </tr>
+                    <tr className="border-t border-border">
+                      <td className="px-4 py-2.5">
+                        SH SACRIFICIO 1"
+                      </td>
+                      <td className="px-4 py-2.5 text-right font-bold text-primary">
+                        {fmt(shown.sh1)}
+                      </td>
+                      <td className="px-4 py-2.5 text-right text-muted-foreground">
+                        m³
+                      </td>
+                    </tr>
+                    <tr className="border-t border-border">
+                      <td className="px-4 py-2.5">
+                        M³ Labor 1
+                      </td>
+                      <td className="px-4 py-2.5 text-right font-bold text-primary">
+                        {fmt(shown.vReal1)}
+                      </td>
+                      <td className="px-4 py-2.5 text-right text-muted-foreground">
+                        m³
+                      </td>
+                    </tr>
+                    <tr className="border-t border-border">
+                      <td className="px-4 py-2.5">
+                        SH SACRIFICIO 2"
+                      </td>
+                      <td className="px-4 py-2.5 text-right font-bold text-primary">
+                        {fmt(shown.sh2)}
+                      </td>
+                      <td className="px-4 py-2.5 text-right text-muted-foreground">
+                        m³
+                      </td>
+                    </tr>
+                    <tr className="border-t border-border">
+                      <td className="px-4 py-2.5">
+                        M³ Labor 2
+                      </td>
+                      <td className="px-4 py-2.5 text-right font-bold text-primary">
+                        {fmt(shown.vReal2)}
+                      </td>
+                      <td className="px-4 py-2.5 text-right text-muted-foreground">
+                        m³
+                      </td>
+                    </tr>
+                  </>
+                ) : (
+                  <tr className="border-t border-border bg-primary/5">
+                    <td className="px-4 py-2.5">
+                      Volumen de resane (Área / 11.5)
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-bold text-primary">
+                      {fmt2(shown.vResane)}
+                    </td>
+                    <td className="px-4 py-2.5 text-right text-muted-foreground">
+                      m³
+                    </td>
+                  </tr>
+                )}
+                <tr className="border-t border-border bg-primary/5">
+                  <td className="px-4 py-2.5">
+                    Calibradores (gauge pins)
+                  </td>
+                  <td className="px-4 py-2.5 text-right font-bold text-primary">
+                    {shown.calib}
+                  </td>
+                  <td className="px-4 py-2.5 text-right text-muted-foreground">
+                    und
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button
+            onClick={copyReport}
+            className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary font-display text-xl font-bold uppercase tracking-wider text-primary-foreground transition-all hover:brightness-110"
+          >
+            {copied ? (
+              <Check className="size-5" />
+            ) : (
+              <ClipboardCopy className="size-5" />
+            )}
+            {copied ? "¡Copiado!" : "Copiar reporte"}
+          </button>
         </div>
-
-        <button
-          onClick={copyReport}
-          disabled={!valid}
-          className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary font-display text-xl font-bold uppercase tracking-wider text-primary-foreground transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {copied ? <Check className="size-5" /> : <ClipboardCopy className="size-5" />}
-          {copied ? "¡Copiado!" : "Copiar reporte"}
-        </button>
+      )}
       </div>
     </div>
   );
