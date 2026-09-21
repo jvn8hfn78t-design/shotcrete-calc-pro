@@ -13,6 +13,7 @@ const PULGADA_A_METROS = 0.0254;
 const SOBREESPESOR_CONTRACTUAL = 0.2;
 
 const RESANE_RENDIMIENTO = 11.5;
+const MALLA_RENDIMIENTO = 21;
 
 // Rangos razonables para labores subterráneas
 const RANGES = {
@@ -22,7 +23,7 @@ const RANGES = {
   p: { min: 1, max: 60, label: "Perímetro (P)" },
 } as const;
 
-type Mode = "avance" | "resane";
+type Mode = "avance" | "resane" | "malla";
 type FieldKey = keyof typeof RANGES;
 
 function parse(v: string): number {
@@ -297,8 +298,8 @@ const reset = () => {
       <div className="hazard-stripes h-3" />
 
       {/* Mode switcher */}
-      <div className="grid grid-cols-2 gap-2 p-4 sm:p-6">
-        {(["avance", "resane"] as Mode[]).map((m) => (
+      <div className="grid grid-cols-3 gap-2 p-4 sm:p-6">
+        {(["avance", "resane", "malla"] as Mode[]).map((m) => (
           <button
             key={m}
             onClick={() => setMode(m)}
