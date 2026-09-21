@@ -1305,6 +1305,13 @@ const generatePDF = () => {
   )}
 </div>
 
+<button
+  onClick={generatePDF}
+  className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg border-2 border-primary bg-primary/10 font-display text-xl font-bold uppercase tracking-wider text-primary transition-all hover:bg-primary/20"
+>
+  Descargar PDF
+</button>
+
           <button
             onClick={copyReport}
             className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary font-display text-xl font-bold uppercase tracking-wider text-primary-foreground transition-all hover:brightness-110"
