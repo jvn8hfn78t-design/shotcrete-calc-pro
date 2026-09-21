@@ -3,9 +3,9 @@ import { ClipboardCopy, RotateCcw, Check, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 // ---- Constantes de cálculo (ajustables según contrato) ----
-const R_BOVEDA = 1.10;
+const R_REBOTE = 1.10;
 const R_RUGOSIDAD = 1.16;
-const FC_DEFAULT = 0.90;
+const FARC_DEFAULT = 0.90;
 
 const ESPESOR_BASE_M = 0.0508;
 const ESPESOR_SH_1_M = 0.0254;
@@ -170,12 +170,12 @@ const L = average(l);
       const P = 2 * H + A;
       const area = P * L;
       const vBase =
-  R_BOVEDA *
+  R_REBOTE *
   R_RUGOSIDAD *
   ESPESOR_BASE_M *
   L *
   P *
-  FC_DEFAULT;
+  FARC_DEFAULT;
 
 const vContract = area > 0 ? vBase + SOBREESPESOR_CONTRACTUAL : 0;
 
@@ -183,16 +183,16 @@ const longitudSacrificio = 2 * (H - 1.5) + 2 * A;
 
 const sh1 =
   longitudSacrificio *
-  R_BOVEDA *
+  R_REBOTE *
   R_RUGOSIDAD *
-  FC_DEFAULT *
+  FARC_DEFAULT *
   ESPESOR_SH_1_M;
 
 const sh2 =
   longitudSacrificio *
-  R_BOVEDA *
+  R_REBOTE *
   R_RUGOSIDAD *
-  FC_DEFAULT *
+  FARC_DEFAULT *
   ESPESOR_SH_2_M;
 
 const vReal1 = vBase + sh1;
@@ -202,7 +202,7 @@ const vReal2 = vBase + sh2;
     ? 0
     : H > 4.2
       ? Math.round((H - 1) * 2 * 2)
-      : Math.ceil(P * FC_DEFAULT - 1) * 2;
+      : Math.ceil(P * FARC_DEFAULT - 1) * 2;
       return { P, area, vBase, vContract, sh1, sh2, vReal1, vReal2, calib };
     }
     const area = H * L;
