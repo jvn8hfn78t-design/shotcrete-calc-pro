@@ -335,17 +335,6 @@ const reset = () => {
     />
   </div>
 </div>
-    <label className="mb-1 block text-sm font-extrabold uppercase tracking-wide text-foreground">
-      Nivel
-    </label>
-    <input
-      type="text"
-      value={nivel}
-      onChange={(e) => setNivel(e.target.value)}
-      placeholder="Ingrese nivel"
-      className="h-12 w-full rounded-lg border-2 border-input bg-secondary px-3 text-base font-semibold text-foreground outline-none focus:border-primary"
-    />
-  </div>
 </div>
 <div>
   <div className="mb-2 flex items-center justify-between">
@@ -508,7 +497,6 @@ const reset = () => {
   <p className="mt-2 text-xs font-bold text-muted-foreground">
     Promedio L: {average(l).toFixed(2)} m
   </p>
-</div>
 </div>
       <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
   <button
