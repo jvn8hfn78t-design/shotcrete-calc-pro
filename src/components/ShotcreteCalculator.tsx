@@ -25,6 +25,11 @@ const RANGES = {
 type Mode = "avance" | "resane";
 type FieldKey = keyof typeof RANGES;
 
+function parse(v: string): number {
+  const n = parseFloat(v.replace(",", "."));
+  return Number.isFinite(n) ? n : 0;
+}
+
 function average(values: string[]): number {
   const numbers = values
     .map(parse)
