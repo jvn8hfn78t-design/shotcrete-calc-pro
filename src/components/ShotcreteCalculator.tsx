@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import jsPDF from "jspdf";
 import {
   ClipboardCopy,
@@ -155,6 +155,7 @@ const [espesor, setEspesor] = useState("2");
 const [copied, setCopied] = useState(false);
 const [calculated, setCalculated] = useState(false);
 const [photos, setPhotos] = useState<string[]>([]);
+const resultsRef = useRef<HTMLDivElement>(null);
 
       const errors = useMemo(() => {
   const list: string[] = [];
@@ -351,6 +352,13 @@ const removePhoto = (index: number) => {
 
   setCalculated(true);
   toast.success("Cálculo realizado correctamente");
+
+  setTimeout(() => {
+    resultsRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, 100);
 };
 
 const addMeasurement = (
@@ -1616,8 +1624,11 @@ Fecha: ${date}`;
 </div>
 
             {/* Results */}
-      {shown && (
-  <div className="border-t-2 border-border bg-background/60 px-4 py-6 sm:px-6">
+{shown && (
+  <div
+    ref={resultsRef}
+    className="border-t-2 border-border bg-background/60 px-4 py-6 sm:px-6"
+  >
     <div className="mb-5 border-b-2 border-primary/30 pb-3">
       <p className="text-lg font-bold uppercase tracking-[0.25em] text-primary">
         RESULTADOS
