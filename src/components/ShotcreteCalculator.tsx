@@ -509,7 +509,7 @@ if (mode === "avance") {
   // PERÍMETRO / ÁREA / V. CONTRATO
   // ─────────────────────────────────────────────
 
-  const mainBoxHeight = 28;
+  const mainBoxHeight = 24;
 
   pdf.setDrawColor(150, 150, 150);
   pdf.setLineWidth(0.4);
@@ -542,34 +542,34 @@ if (mode === "avance") {
   pdf.text(
     "PERÍMETRO",
     margin + 3,
-    y + 6
+    y + 5
   );
 
   pdf.text(
     "ÁREA",
     margin + colWidth + 3,
-    y + 6
+    y + 5
   );
 
   pdf.text(
     "V. CONTRATO",
     margin + colWidth * 2 + 3,
-    y + 6
+    y + 5
   );
 
-  pdf.setFontSize(11);
+  pdf.setFontSize(10);
   pdf.setTextColor(25, 25, 25);
 
   pdf.text(
     `${fmtPDF(shown.P)} m`,
     margin + 3,
-    y + 19
+    y + 17
   );
 
   pdf.text(
     `${fmtPDF(shown.area)} m²`,
     margin + colWidth + 3,
-    y + 19
+    y + 17
   );
 
   pdf.setFont("helvetica", "bold");
@@ -577,16 +577,16 @@ if (mode === "avance") {
   pdf.text(
     `${fmtPDF(shown.vContract ?? 0)} m³`,
     margin + colWidth * 2 + 3,
-    y + 19
+    y + 17
   );
 
-  y += mainBoxHeight + 8;
+  y += mainBoxHeight + 5;
 
   // ─────────────────────────────────────────────
   // SACRIFICIO 1"
   // ─────────────────────────────────────────────
 
-  const sacrificeBoxHeight = 30;
+  const sacrificeBoxHeight = 26;
 
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(9);
@@ -602,19 +602,19 @@ if (mode === "avance") {
   pdf.text(
     'SACRIFICIO 1"',
     margin + 3,
-    y + 6
+    y + 5
   );
 
   pdf.line(
     margin,
-    y + 9,
+    y + 8,
     margin + contentWidth,
-    y + 9
+    y + 8
   );
 
   pdf.line(
     margin + half,
-    y + 9,
+    y + 8,
     margin + half,
     y + sacrificeBoxHeight
   );
@@ -625,32 +625,32 @@ if (mode === "avance") {
   pdf.text(
     "SH",
     margin + 4,
-    y + 15
+    y + 14
   );
 
   pdf.text(
     'M³ LABOR 1"',
     margin + half + 4,
-    y + 15
+    y + 14
   );
 
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(11);
+  pdf.setFontSize(10);
   pdf.setTextColor(25, 25, 25);
 
   pdf.text(
     `${fmtPDF(shown.sh1 ?? 0)} m³`,
     margin + 4,
-    y + 25
+    y + 22
   );
 
   pdf.text(
     `${fmtPDF(shown.vReal1 ?? 0)} m³`,
     margin + half + 4,
-    y + 25
+    y + 22
   );
 
-  y += sacrificeBoxHeight + 8;
+  y += sacrificeBoxHeight + 5;
 
   // ─────────────────────────────────────────────
   // SACRIFICIO 2"
@@ -670,19 +670,19 @@ if (mode === "avance") {
   pdf.text(
     'SACRIFICIO 2"',
     margin + 3,
-    y + 6
+    y + 5
   );
 
   pdf.line(
     margin,
-    y + 9,
+    y + 8,
     margin + contentWidth,
-    y + 9
+    y + 8
   );
 
   pdf.line(
     margin + half,
-    y + 9,
+    y + 8,
     margin + half,
     y + sacrificeBoxHeight
   );
@@ -693,38 +693,38 @@ if (mode === "avance") {
   pdf.text(
     "SH",
     margin + 4,
-    y + 15
+    y + 14
   );
 
   pdf.text(
     'M³ LABOR 2"',
     margin + half + 4,
-    y + 15
+    y + 14
   );
 
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(11);
+  pdf.setFontSize(10);
   pdf.setTextColor(25, 25, 25);
 
   pdf.text(
     `${fmtPDF(shown.sh2 ?? 0)} m³`,
     margin + 4,
-    y + 25
+    y + 22
   );
 
   pdf.text(
     `${fmtPDF(shown.vReal2 ?? 0)} m³`,
     margin + half + 4,
-    y + 25
+    y + 22
   );
 
-  y += sacrificeBoxHeight + 8;
+  y += sacrificeBoxHeight + 5;
 
   // ─────────────────────────────────────────────
   // CALIBRADORES
   // ─────────────────────────────────────────────
 
-  const calibBoxHeight = 28;
+  const calibBoxHeight = 24;
 
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(9);
@@ -740,16 +740,16 @@ if (mode === "avance") {
   pdf.text(
     "CALIBRADORES",
     margin + 3,
-    y + 6
+    y + 5
   );
 
-  pdf.setFontSize(13);
+  pdf.setFontSize(12);
   pdf.setTextColor(25, 25, 25);
 
   pdf.text(
     `${shown.calib ?? 0} UND`,
     pageWidth / 2,
-    y + 20,
+    y + 17,
     {
       align: "center",
     }
