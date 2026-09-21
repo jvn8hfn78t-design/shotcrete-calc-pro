@@ -701,163 +701,157 @@ const reset = () => {
 </p>
           )}
           {/* Verification table */}
-          <div className="mt-6 overflow-x-auto rounded-lg border border-border">
-            <table className="w-full min-w-[420px] text-left text-sm">
-              <thead>
-                <tr className="bg-secondary text-xs uppercase tracking-widest text-muted-foreground">
-                  <th className="px-4 py-3">Concepto</th>
-                  <th className="px-4 py-3 text-right">Valor</th>
-                  <th className="px-4 py-3 text-right">Unidad</th>
-                </tr>
-              </thead>
-              <tbody className="tabular-nums">
-                <tr className="border-t border-border">
-                  <td className="px-4 py-2.5">Perímetro</td>
-                  <td className="px-4 py-2.5 text-right font-bold">
-                    {fmt2(shown.P)}
-                  </td>
-                  <td className="px-4 py-2.5 text-right text-muted-foreground">
-                    m
-                  </td>
-                </tr>
-                <tr className="border-t border-border">
-                  <td className="px-4 py-2.5">Área</td>
-                  <td className="px-4 py-2.5 text-right font-bold">
-                    {fmt2(shown.area)}
-                  </td>
-                  <td className="px-4 py-2.5 text-right text-muted-foreground">
-                    m²
-                  </td>
-                </tr>
-                                {mode === "avance" ? (
-                  <>
-                    <tr className="border-t border-border bg-primary/5">
-                      <td className="px-4 py-2.5">
-                        Volumen contractual
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-bold text-primary">
-                        {fmt(shown.vContract)}
-                      </td>
-                      <td className="px-4 py-2.5 text-right text-muted-foreground">
-                        m³
-                      </td>
-                    </tr>
+<div className="mt-6 overflow-x-auto rounded-lg border border-border">
+  <table className="w-full min-w-[420px] text-left text-sm">
+    <thead>
+      <tr className="bg-secondary text-xs uppercase tracking-widest text-muted-foreground">
+        <th className="px-4 py-3">Concepto</th>
+        <th className="px-4 py-3 text-right">Valor</th>
+        <th className="px-4 py-3 text-right">Unidad</th>
+      </tr>
+    </thead>
 
-                    <tr className="border-t border-border">
-                      <td className="px-4 py-2.5">
-                        SH SACRIFICIO 1"
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-bold text-primary">
-                        {fmt(shown.sh1)}
-                      </td>
-                      <td className="px-4 py-2.5 text-right text-muted-foreground">
-                        m³
-                      </td>
-                    </tr>
+    <tbody className="tabular-nums">
+      <tr className="border-t border-border">
+        <td className="px-4 py-2.5">
+          Perímetro
+        </td>
+        <td className="px-4 py-2.5 text-right font-bold">
+          {fmt2(shown.P)}
+        </td>
+        <td className="px-4 py-2.5 text-right text-muted-foreground">
+          m
+        </td>
+      </tr>
 
-                    <tr className="border-t border-border">
-                      <td className="px-4 py-2.5">
-                        M³ Labor 1
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-bold text-primary">
-                        {fmt(shown.vReal1)}
-                      </td>
-                      <td className="px-4 py-2.5 text-right text-muted-foreground">
-                        m³
-                      </td>
-                    </tr>
+      <tr className="border-t border-border">
+        <td className="px-4 py-2.5">
+          Área
+        </td>
+        <td className="px-4 py-2.5 text-right font-bold">
+          {fmt2(shown.area)}
+        </td>
+        <td className="px-4 py-2.5 text-right text-muted-foreground">
+          m²
+        </td>
+      </tr>
 
-                    <tr className="border-t border-border">
-                      <td className="px-4 py-2.5">
-                        SH SACRIFICIO 2"
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-bold text-primary">
-                        {fmt(shown.sh2)}
-                      </td>
-                      <td className="px-4 py-2.5 text-right text-muted-foreground">
-                        m³
-                      </td>
-                    </tr>
+      {mode === "avance" ? (
+        <>
+          <tr className="border-t border-border bg-primary/5">
+            <td className="px-4 py-2.5">
+              Volumen contractual
+            </td>
+            <td className="px-4 py-2.5 text-right font-bold text-primary">
+              {fmt(shown.vContract)}
+            </td>
+            <td className="px-4 py-2.5 text-right text-muted-foreground">
+              m³
+            </td>
+          </tr>
 
-                    <tr className="border-t border-border">
-                      <td className="px-4 py-2.5">
-                        M³ Labor 2
-                      </td>
-                      <td className="px-4 py-2.5 text-right font-bold text-primary">
-                        {fmt(shown.vReal2)}
-                      </td>
-                      <td className="px-4 py-2.5 text-right text-muted-foreground">
-                        m³
-                      </td>
-                    </tr>
-                  </>
-                ) : mode === "malla" ? (
-                  <tr className="border-t border-border bg-primary/5">
-                    <td className="px-4 py-2.5">
-                      Volumen de malla (Área / 21)
-                    </td>
-                    <td className="px-4 py-2.5 text-right font-bold text-primary">
-                      {fmt(shown.vMalla, 2)}
-                    </td>
-                    <td className="px-4 py-2.5 text-right text-muted-foreground">
-                      m³
-                    </td>
-                  </tr>
-                ) : (
-                  <tr className="border-t border-border bg-primary/5">
-                    <td className="px-4 py-2.5">
-                      Volumen de resane (Área / 11.5)
-                    </td>
-                    <td className="px-4 py-2.5 text-right font-bold text-primary">
-                      {fmt2(shown.vResane)}
-                    </td>
-                    <td className="px-4 py-2.5 text-right text-muted-foreground">
-                      m³
-                    </td>
-                  </tr>
-                )}
+          <tr className="border-t border-border">
+            <td className="px-4 py-2.5">
+              SH SACRIFICIO 1"
+            </td>
+            <td className="px-4 py-2.5 text-right font-bold text-primary">
+              {fmt(shown.sh1)}
+            </td>
+            <td className="px-4 py-2.5 text-right text-muted-foreground">
+              m³
+            </td>
+          </tr>
 
-                {mode !== "malla" && (
-                  <tr className="border-t border-border bg-primary/5">
-                    <td className="px-4 py-2.5">
-                      Calibradores
-                    </td>
-                    <td className="px-4 py-2.5 text-right font-bold text-primary">
-                      {shown.calib}
-                    </td>
-                    <td className="px-4 py-2.5 text-right text-muted-foreground">
-                      und
-                    </td>
-                  </tr>
-                )}
-                  </>
-                ) : (
-                  <tr className="border-t border-border bg-primary/5">
-                    <td className="px-4 py-2.5">
-                      Volumen de resane (Área / 11.5)
-                    </td>
-                    <td className="px-4 py-2.5 text-right font-bold text-primary">
-                      {fmt2(shown.vResane)}
-                    </td>
-                    <td className="px-4 py-2.5 text-right text-muted-foreground">
-                      m³
-                    </td>
-                  </tr>
-                )}
-                <tr className="border-t border-border bg-primary/5">
-                  <td className="px-4 py-2.5">
-                    Calibradores
-                  </td>
-                  <td className="px-4 py-2.5 text-right font-bold text-primary">
-                    {shown.calib}
-                  </td>
-                  <td className="px-4 py-2.5 text-right text-muted-foreground">
-                    und
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <tr className="border-t border-border">
+            <td className="px-4 py-2.5">
+              M³ Labor 1
+            </td>
+            <td className="px-4 py-2.5 text-right font-bold text-primary">
+              {fmt(shown.vReal1)}
+            </td>
+            <td className="px-4 py-2.5 text-right text-muted-foreground">
+              m³
+            </td>
+          </tr>
+
+          <tr className="border-t border-border">
+            <td className="px-4 py-2.5">
+              SH SACRIFICIO 2"
+            </td>
+            <td className="px-4 py-2.5 text-right font-bold text-primary">
+              {fmt(shown.sh2)}
+            </td>
+            <td className="px-4 py-2.5 text-right text-muted-foreground">
+              m³
+            </td>
+          </tr>
+
+          <tr className="border-t border-border">
+            <td className="px-4 py-2.5">
+              M³ Labor 2
+            </td>
+            <td className="px-4 py-2.5 text-right font-bold text-primary">
+              {fmt(shown.vReal2)}
+            </td>
+            <td className="px-4 py-2.5 text-right text-muted-foreground">
+              m³
+            </td>
+          </tr>
+
+          <tr className="border-t border-border bg-primary/5">
+            <td className="px-4 py-2.5">
+              Calibradores
+            </td>
+            <td className="px-4 py-2.5 text-right font-bold text-primary">
+              {shown.calib}
+            </td>
+            <td className="px-4 py-2.5 text-right text-muted-foreground">
+              und
+            </td>
+          </tr>
+        </>
+      ) : mode === "malla" ? (
+        <tr className="border-t border-border bg-primary/5">
+          <td className="px-4 py-2.5">
+            Volumen de malla (Área / 21)
+          </td>
+          <td className="px-4 py-2.5 text-right font-bold text-primary">
+            {fmt(shown.vMalla, 2)}
+          </td>
+          <td className="px-4 py-2.5 text-right text-muted-foreground">
+            m³
+          </td>
+        </tr>
+      ) : (
+        <>
+          <tr className="border-t border-border bg-primary/5">
+            <td className="px-4 py-2.5">
+              Volumen de resane (Área / 11.5)
+            </td>
+            <td className="px-4 py-2.5 text-right font-bold text-primary">
+              {fmt2(shown.vResane)}
+            </td>
+            <td className="px-4 py-2.5 text-right text-muted-foreground">
+              m³
+            </td>
+          </tr>
+
+          <tr className="border-t border-border bg-primary/5">
+            <td className="px-4 py-2.5">
+              Calibradores
+            </td>
+            <td className="px-4 py-2.5 text-right font-bold text-primary">
+              {shown.calib}
+            </td>
+            <td className="px-4 py-2.5 text-right text-muted-foreground">
+              und
+            </td>
+          </tr>
+        </>
+      )}
+    </tbody>
+  </table>
+</div>
           <button
             onClick={copyReport}
             className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary font-display text-xl font-bold uppercase tracking-wider text-primary-foreground transition-all hover:brightness-110"
