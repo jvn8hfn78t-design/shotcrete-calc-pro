@@ -733,7 +733,7 @@ const reset = () => {
                 )}
                 <tr className="border-t border-border bg-primary/5">
                   <td className="px-4 py-2.5">
-                    Calibradores (gauge pins)
+                    Calibradores
                   </td>
                   <td className="px-4 py-2.5 text-right font-bold text-primary">
                     {shown.calib}
