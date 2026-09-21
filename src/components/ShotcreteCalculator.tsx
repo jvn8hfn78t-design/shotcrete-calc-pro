@@ -82,7 +82,10 @@ function Field({ fieldKey, value, onChange }: FieldProps) {
         value={value}
         placeholder="0.00"
         aria-invalid={!!error}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+  onChange(e.target.value);
+  invalidateCalculation();
+}}
         className={`h-12 w-full rounded-lg border-2 bg-secondary px-3 text-2xl font-bold tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground/40 ${
           error ? "border-destructive" : "border-input focus:border-primary"
         }`}
@@ -157,27 +160,39 @@ const [calculated, setCalculated] = useState(false);
 const [photos, setPhotos] = useState<string[]>([]);
 
       const errors = useMemo(() => {
-    const list: string[] = [];
+  const list: string[] = [];
 
-    h.forEach((value, index) => {
-      const error = fieldError("h", value);
-      if (error) list.push(`Altura ${index + 1}: ${error}`);
-    });
+  h.forEach((value, index) => {
+    if (value.trim() === "") return;
 
-    l.forEach((value, index) => {
-      const error = fieldError("l", value);
-      if (error) list.push(`Avance ${index + 1}: ${error}`);
-    });
-
-    if (mode === "avance" || mode === "malla") {
-      a.forEach((value, index) => {
-        const error = fieldError("a", value);
-        if (error) list.push(`Ancho ${index + 1}: ${error}`);
-      });
+    const error = fieldError("h", value);
+    if (error) {
+      list.push(`Altura ${index + 1}: ${error}`);
     }
+  });
 
-    return list;
-  }, [mode, h, a, l]);
+  l.forEach((value, index) => {
+    if (value.trim() === "") return;
+
+    const error = fieldError("l", value);
+    if (error) {
+      list.push(`Avance ${index + 1}: ${error}`);
+    }
+  });
+
+  if (mode === "avance" || mode === "malla") {
+    a.forEach((value, index) => {
+      if (value.trim() === "") return;
+
+      const error = fieldError("a", value);
+      if (error) {
+        list.push(`Ancho ${index + 1}: ${error}`);
+      }
+    });
+  }
+
+  return list;
+}, [mode, h, a, l]);
 
   const inputsComplete =
   mode === "avance" || mode === "malla"
@@ -187,7 +202,15 @@ const [photos, setPhotos] = useState<string[]>([]);
     : h.some((value) => value.trim() !== "") &&
       l.some((value) => value.trim() !== "");
 
-  const espesorValido = mode !== "avance" || parse(espesor) > 0;
+  const espesorNumero = parse(espesor);
+
+const espesorValido =
+  mode !== "avance" &&
+  mode !== "malla"
+    ? true
+    : mode === "malla"
+      ? true
+      : Number.isFinite(espesorNumero) && espesorNumero > 0;
 
 const valid = inputsComplete && errors.length === 0 && espesorValido;
 
@@ -263,8 +286,16 @@ const addPhotos = (files: FileList | null) => {
 
   const selectedFiles = Array.from(files);
 
-  selectedFiles.forEach((file) => {
-    if (!file.type.startsWith("image/")) return;
+selectedFiles.forEach((file) => {
+  if (!file.type.startsWith("image/")) {
+    toast.error("Solo se permiten archivos de imagen");
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    toast.error(`La foto "${file.name}" supera el límite de 10 MB`);
+    return;
+  }
 
     const reader = new FileReader();
 
@@ -320,7 +351,9 @@ const removePhoto = (index: number) => {
     toast.error("Ingresa valores válidos para calcular");
     return;
   }
+
   setCalculated(true);
+  toast.success("Cálculo realizado correctamente");
 };
 
 const addMeasurement = (
@@ -337,6 +370,10 @@ const removeMeasurement = (
     if (values.length === 1) return values;
     return values.filter((_, i) => i !== index);
   });
+};
+
+const invalidateCalculation = () => {
+  setCalculated(false);
 };
 
 const reset = () => {
@@ -1549,7 +1586,10 @@ Fecha: ${date}`;
         min="0"
         step="0.1"
         value={espesor}
-        onChange={(e) => setEspesor(e.target.value)}
+        onChange={(e) => {
+  setEspesor(e.target.value);
+  invalidateCalculation();
+}}
         className="h-11 w-24 rounded-lg border-2 border-input bg-background px-3 text-center text-xl font-bold tabular-nums text-foreground outline-none focus:border-primary"
       />
     </div>
