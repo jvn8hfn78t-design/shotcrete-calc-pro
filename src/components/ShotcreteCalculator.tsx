@@ -551,7 +551,7 @@ const reset = () => {
 </div>
 
   {/* Calibradores */}
-<p className="pt-3 text-sm font-bold uppercase tracking-widest text-primary">
+<p className="pt-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
   Calibradores
 </p>
 
