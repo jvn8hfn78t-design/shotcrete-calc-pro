@@ -413,15 +413,15 @@ const buildPDF = () => {
   drawDataRow("Uso", modoTexto, y);
   y += 7;
 
-  drawDataRow("Altura (H)", `${fmtPDF(Number(h))} m`, y);
+  drawDataRow("Altura (H)", `${fmtPDF(average(h))} m`, y);
   y += 7;
 
   if (mode !== "resane") {
-    drawDataRow("Ancho (A)", `${fmtPDF(Number(a))} m`, y);
+    drawDataRow("Ancho (A)", `${fmtPDF(average(a))} m`, y);
     y += 7;
   }
 
-  drawDataRow("Avance (L)", `${fmtPDF(Number(l))} m`, y);
+  drawDataRow("Avance (L)", `${fmtPDF(average(l))} m`, y);
   y += 7;
 
   if (mode === "avance") {
@@ -1522,7 +1522,7 @@ Fecha: ${date}`;
 
           <button
             onClick={copyReport}
-            className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary font-display text-xl font-bold uppercase tracking-wider text-primary-foreground transition-all hover:brightness-110"
+            className="mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary font-display text-xl font-bold uppercase tracking-wider text-primary-foreground transition-all hover:brightness-110"
           >
             {copied ? (
               <Check className="size-5" />
