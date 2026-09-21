@@ -308,138 +308,167 @@ const reset = () => {
             {/* Inputs */}
       <div className="grid gap-4 px-4 pb-2 sm:grid-cols-3 sm:px-6">
         <div>
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-              ALTURA (H) <span className="text-steel">(m)</span>
-            </span>
-            <button
-              type="button"
-              onClick={() => addMeasurement(setH)}
-              className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-lg font-bold text-primary-foreground"
-            >
-              +
-            </button>
-          </div>
+  <div className="mb-2 flex items-center justify-between">
+    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+      ALTURA (H) <span className="text-steel">(m)</span>
+    </span>
 
-          <div className="space-y-2">
-  {h.map((value, index) => (
-    <div key={index} className="flex gap-2">
-      <Field
-        fieldKey="h"
-        value={value}
-        onChange={(v) =>
-          setH((values) =>
-            values.map((item, i) => (i === index ? v : item))
-          )
-        }
-      />
-      {h.length > 1 && (
-        <button
-          type="button"
-          onClick={() => removeMeasurement(setH, index)}
-          className="mt-0 h-16 w-10 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
-        >
-          −
-        </button>
-      )}
-    </div>
-  ))}
-</div>
+    <button
+      type="button"
+      onClick={() => addMeasurement(setH)}
+      className="flex h-8 items-center justify-center rounded-md bg-primary px-3 text-sm font-bold text-primary-foreground"
+    >
+      + Agregar medición
+    </button>
+  </div>
 
-<p className="mt-2 text-xs font-bold text-muted-foreground">
-  Promedio H: {average(h).toFixed(2)} m
-</p>
+  <div className="space-y-2">
+    {h.map((value, index) => (
+      <div key={index} className="flex gap-2">
+        <div className="relative flex-1">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">
+            H{index + 1}
+          </span>
+
+          <Field
+            fieldKey="h"
+            value={value}
+            onChange={(v) =>
+              setH((values) =>
+                values.map((item, i) => (i === index ? v : item))
+              )
+            }
+          />
         </div>
+
+        {h.length > 1 && (
+          <button
+            type="button"
+            onClick={() => removeMeasurement(setH, index)}
+            className="h-16 w-12 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+            aria-label={`Eliminar H${index + 1}`}
+          >
+            🗑️
+          </button>
+        )}
+      </div>
+    ))}
+  </div>
+
+  <p className="mt-2 text-xs font-bold text-muted-foreground">
+    Promedio H: {average(h).toFixed(2)} m
+  </p>
+</div>
 
                 {mode === "avance" ? (
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                ANCHO (A) <span className="text-steel">(m)</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => addMeasurement(setA)}
-                className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-lg font-bold text-primary-foreground"
-              >
-                +
-              </button>
-            </div>
-            <div className="space-y-2">
-              {a.map((value, index) => (
-                <div key={index} className="flex gap-2">
-                  <Field
-                    fieldKey="a"
-                    value={value}
-                    onChange={(v) =>
-                      setA((values) =>
-                        values.map((item, i) => (i === index ? v : item))
-                      )
-                    }
-                  />
-                  {a.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeMeasurement(setA, index)}
-                      className="mt-0 h-16 w-10 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
-                    >
-                      −
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            <p className="mt-2 text-xs font-bold text-muted-foreground">
-              Promedio A: {average(a).toFixed(2)} m
-            </p>
-          </div>
-        ) : (
-          <div />
-        )}
+  <div>
+    <div className="mb-2 flex items-center justify-between">
+      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        ANCHO (A) <span className="text-steel">(m)</span>
+      </span>
 
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-              AVANCE (L) <span className="text-steel">(m)</span>
+      <button
+        type="button"
+        onClick={() => addMeasurement(setA)}
+        className="flex h-8 items-center justify-center rounded-md bg-primary px-3 text-sm font-bold text-primary-foreground"
+      >
+        + Agregar medición
+      </button>
+    </div>
+
+    <div className="space-y-2">
+      {a.map((value, index) => (
+        <div key={index} className="flex gap-2">
+          <div className="relative flex-1">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">
+              A{index + 1}
             </span>
+
+            <Field
+              fieldKey="a"
+              value={value}
+              onChange={(v) =>
+                setA((values) =>
+                  values.map((item, i) => (i === index ? v : item))
+                )
+              }
+            />
+          </div>
+
+          {a.length > 1 && (
             <button
               type="button"
-              onClick={() => addMeasurement(setL)}
-              className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-lg font-bold text-primary-foreground"
+              onClick={() => removeMeasurement(setA, index)}
+              className="h-16 w-12 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+              aria-label={`Eliminar A${index + 1}`}
             >
-              +
+              🗑️
             </button>
-          </div>
-
-          <div className="space-y-2">
-  {l.map((value, index) => (
-    <div key={index} className="flex gap-2">
-      <Field
-        fieldKey="l"
-        value={value}
-        onChange={(v) =>
-          setL((values) =>
-            values.map((item, i) => (i === index ? v : item))
-          )
-        }
-      />
-      {l.length > 1 && (
-        <button
-          type="button"
-          onClick={() => removeMeasurement(setL, index)}
-          className="mt-0 h-16 w-10 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
-        >
-          −
-        </button>
-      )}
-    </div>
-  ))}
-</div>
-
-<p className="mt-2 text-xs font-bold text-muted-foreground">
-  Promedio L: {average(l).toFixed(2)} m
-</p>
+          )}
         </div>
+      ))}
+    </div>
+
+    <p className="mt-2 text-xs font-bold text-muted-foreground">
+      Promedio A: {average(a).toFixed(2)} m
+    </p>
+  </div>
+) : (
+  <div />
+)}
+
+        <div>
+  <div className="mb-2 flex items-center justify-between">
+    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+      AVANCE (L) <span className="text-steel">(m)</span>
+    </span>
+
+    <button
+      type="button"
+      onClick={() => addMeasurement(setL)}
+      className="flex h-8 items-center justify-center rounded-md bg-primary px-3 text-sm font-bold text-primary-foreground"
+    >
+      + Agregar medición
+    </button>
+  </div>
+
+  <div className="space-y-2">
+    {l.map((value, index) => (
+      <div key={index} className="flex gap-2">
+        <div className="relative flex-1">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">
+            L{index + 1}
+          </span>
+
+          <Field
+            fieldKey="l"
+            value={value}
+            onChange={(v) =>
+              setL((values) =>
+                values.map((item, i) => (i === index ? v : item))
+              )
+            }
+          />
+        </div>
+
+        {l.length > 1 && (
+          <button
+            type="button"
+            onClick={() => removeMeasurement(setL, index)}
+            className="h-16 w-12 shrink-0 rounded-lg border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+            aria-label={`Eliminar L${index + 1}`}
+          >
+            🗑️
+          </button>
+        )}
+      </div>
+    ))}
+  </div>
+
+  <p className="mt-2 text-xs font-bold text-muted-foreground">
+    Promedio L: {average(l).toFixed(2)} m
+  </p>
+</div>
       </div>
 
       <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
