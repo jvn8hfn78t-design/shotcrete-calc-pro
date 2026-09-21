@@ -1240,7 +1240,7 @@ Fecha: ${date}`;
   </p>
 </div>
       {/* Mode switcher */}
-<div className="px-4 pt-4 sm:px-6 sm:pt-6">
+<div className="border-t-2 border-border px-4 pt-5 sm:px-6 sm:pt-5">
   <p className="mb-2 text-sm font-extrabold uppercase tracking-widest text-foreground">
     USO
   </p>
@@ -1263,7 +1263,7 @@ Fecha: ${date}`;
 </div>
 
 {/* Inputs */}
-<div className="px-4 pb-4 pt-2 sm:px-6">
+<div className="border-t-2 border-border px-4 pb-4 pt-5 sm:px-6">
   <p className="mb-3 text-sm font-extrabold uppercase tracking-widest text-foreground">
     DATOS DE LA LABOR
   </p>
@@ -1299,7 +1299,7 @@ Fecha: ${date}`;
     </div>
 </div>
 
-<div className="px-4 pb-4 sm:px-6">
+<div className="border-t-2 border-border px-4 pb-4 pt-5 sm:px-6">
   <p className="mb-4 text-sm font-extrabold uppercase tracking-widest text-foreground">
     MEDICIONES
   </p>
