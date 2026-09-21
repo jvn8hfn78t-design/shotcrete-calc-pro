@@ -3,12 +3,16 @@ import { ClipboardCopy, RotateCcw, Check, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 // ---- Constantes de cálculo (ajustables según contrato) ----
-const ESPESOR_PULGADA_M = 0.0254; // 1" en metros
-const SH = 1.4590; // Factor de sacrificio
-const TASA_CONTRACTUAL = 0.02916667; // m³ por m² (V_base) — verificado: 48 m² -> V_base 1.400 -> Contrato 1.600 m³
-const SOBREESPESOR_CONTRACTUAL = 0.2; // m³ adicionales
-const RESANE_RENDIMIENTO = 11.5; // m² por m³
-const FC_DEFAULT = 0.85; // Espaciamiento de calibradores — P=12 -> 20 und
+const R_BOVEDA = 1.10;
+const R_RUGOSIDAD = 1.16;
+const FC_DEFAULT = 0.90;
+
+const ESPESOR_BASE_M = 0.0508;
+const ESPESOR_SH_1_M = 0.0254;
+const ESPESOR_SH_2_M = 0.0508;
+const SOBREESPESOR_CONTRACTUAL = 0.2;
+
+const RESANE_RENDIMIENTO = 11.5;
 
 // Rangos razonables para labores subterráneas
 const RANGES = {
@@ -138,14 +142,38 @@ export function ShotcreteCalculator() {
     if (mode === "avance") {
       const P = 2 * H + A;
       const area = P * L;
-      const vBase = area * TASA_CONTRACTUAL;
-      const vContract = area > 0 ? vBase + SOBREESPESOR_CONTRACTUAL : 0;
-      const vReal1 = area * ESPESOR_PULGADA_M * SH;
-      const vReal2 = vReal1 * 2;
+      const vBase =
+  R_BOVEDA *
+  R_RUGOSIDAD *
+  ESPESOR_BASE_M *
+  L *
+  P *
+  FC_DEFAULT;
+
+const vContract = area > 0 ? vBase + SOBREESPESOR_CONTRACTUAL : 0;
+
+const longitudSacrificio = 2 * (H - 1.5) + 2 * A;
+
+const sh1 =
+  longitudSacrificio *
+  R_BOVEDA *
+  R_RUGOSIDAD *
+  FC_DEFAULT *
+  ESPESOR_SH_1_M;
+
+const sh2 =
+  longitudSacrificio *
+  R_BOVEDA *
+  R_RUGOSIDAD *
+  FC_DEFAULT *
+  ESPESOR_SH_2_M;
+
+const vReal1 = vBase + sh1;
+const vReal2 = vBase + sh2;
       const Fc = parse(fc) || FC_DEFAULT;
       const calib =
         H <= 0 ? 0 : H > 4.2 ? Math.round((H - 1) * 2 * 2) : Math.ceil(P * Fc - 1) * 2;
-      return { P, area, vBase, vContract, vReal1, vReal2, calib };
+      return { P, area, vBase, vContract, sh1, sh2, vReal1, vReal2, calib };
     }
     const area = H * L;
     const vResane = area / RESANE_RENDIMIENTO;
