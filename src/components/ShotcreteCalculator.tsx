@@ -508,37 +508,45 @@ const reset = () => {
     />
   </div>
 
-  {/* Fila 2: sacrificio 1" */}
-  <div className="grid grid-cols-2 gap-2">
-    <ResultCard
-      label='SH SACRIFICIO 1"'
-      value={fmt(shown.sh1)}
-      unit="m³"
-      highlight
-    />
-    <ResultCard
-      label="M³ Labor"
-      value={fmt(shown.vReal1)}
-      unit="m³"
-      highlight
-    />
-  </div>
+  {/* Cálculo Shotcrete — Sacrificio 1" */}
+<p className="pt-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+  Cálculo Shotcrete — Sacrificio 1"
+</p>
 
-  {/* Fila 3: sacrificio 2" */}
-  <div className="grid grid-cols-2 gap-2">
-    <ResultCard
-      label='SH SACRIFICIO 2"'
-      value={fmt(shown.sh2)}
-      unit="m³"
-      highlight
-    />
-    <ResultCard
-      label="M³ Labor"
-      value={fmt(shown.vReal2)}
-      unit="m³"
-      highlight
-    />
-  </div>
+<div className="grid grid-cols-2 gap-2">
+  <ResultCard
+    label='SH SACRIFICIO 1"'
+    value={fmt(shown.sh1)}
+    unit="m³"
+    highlight
+  />
+  <ResultCard
+    label="M³ Labor"
+    value={fmt(shown.vReal1)}
+    unit="m³"
+    highlight
+  />
+</div>
+
+  {/* Cálculo Shotcrete — Sacrificio 2" */}
+<p className="pt-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+  Cálculo Shotcrete — Sacrificio 2"
+</p>
+
+<div className="grid grid-cols-2 gap-2">
+  <ResultCard
+    label='SH SACRIFICIO 2"'
+    value={fmt(shown.sh2)}
+    unit="m³"
+    highlight
+  />
+  <ResultCard
+    label="M³ Labor"
+    value={fmt(shown.vReal2)}
+    unit="m³"
+    highlight
+  />
+</div>
 
   {/* Fila 4: calibradores */}
   <div className="grid grid-cols-2 gap-2">
