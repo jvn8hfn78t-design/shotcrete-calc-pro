@@ -1442,7 +1442,8 @@ Fecha: ${date}`;
 </div>
 {mode === "avance" && (
 <div className="px-4 pb-4 pt-2 sm:px-6">
-  <label className="mb-2 block text-sm font-extrabold uppercase tracking-widest text-foreground">
+  <div className="flex items-center justify-between gap-4">
+  <label className="text-sm font-extrabold uppercase tracking-widest text-foreground">
     ESPESOR <span className="text-steel">(pulg)</span>
   </label>
 
@@ -1453,7 +1454,7 @@ Fecha: ${date}`;
     step="0.1"
     value={espesor}
     onChange={(e) => setEspesor(e.target.value)}
-    className="h-14 w-full rounded-lg border-2 border-input bg-secondary px-4 text-2xl font-bold tabular-nums text-foreground outline-none focus:border-primary"
+    className="h-12 w-24 rounded-lg border-2 border-input bg-secondary px-3 text-center text-xl font-bold tabular-nums text-foreground outline-none focus:border-primary"
   />
 </div>
 )}
