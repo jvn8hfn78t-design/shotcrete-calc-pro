@@ -313,330 +313,478 @@ const generatePDF = () => {
 
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 15;
 
-  const today = new Date();
+  const margin = 14;
+  const contentWidth = pageWidth - margin * 2;
 
-  const date = today.toLocaleDateString("es-PE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  const date = new Date().toLocaleDateString("es-PE");
 
-  const modeLabel =
+  const safeLabor =
+    labor.trim().replace(/[^a-zA-Z0-9_-]/g, "_") || "Sin_Labor";
+
+  const fileName = `Reporte_Shotcrete_${safeLabor}_${date.replace(
+    /\//g,
+    "-"
+  )}.pdf`;
+
+  const fmtPDF = (value: number, decimals = 2) =>
+    Number(value || 0).toFixed(decimals);
+
+  // ─────────────────────────────────────────────
+  // ENCABEZADO
+  // ─────────────────────────────────────────────
+
+  pdf.setFillColor(35, 35, 35);
+  pdf.rect(0, 0, pageWidth, 30, "F");
+
+  pdf.setTextColor(255, 255, 255);
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(18);
+  pdf.text("UM CHUNGAR", margin, 12);
+
+  pdf.setFontSize(11);
+  pdf.text("CÁLCULO DE VOLUMEN DE SHOTCRETE", margin, 21);
+
+  // ─────────────────────────────────────────────
+  // DATOS GENERALES
+  // ─────────────────────────────────────────────
+
+  let y = 40;
+
+  pdf.setTextColor(35, 35, 35);
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(9);
+
+  pdf.text("Fecha:", margin, y);
+  pdf.setFont("helvetica", "normal");
+  pdf.text(date, margin + 20, y);
+
+  y += 7;
+
+  pdf.setFont("helvetica", "bold");
+  pdf.text("Nivel:", margin, y);
+  pdf.setFont("helvetica", "normal");
+  pdf.text(nivel || "—", margin + 20, y);
+
+  y += 7;
+
+  pdf.setFont("helvetica", "bold");
+  pdf.text("Labor:", margin, y);
+  pdf.setFont("helvetica", "normal");
+  pdf.text(labor || "—", margin + 20, y);
+
+  // ─────────────────────────────────────────────
+  // DATOS DE LA LABOR
+  // ─────────────────────────────────────────────
+
+  y += 12;
+
+  pdf.setFillColor(235, 235, 235);
+  pdf.rect(margin, y, contentWidth, 8, "F");
+
+  pdf.setTextColor(35, 35, 35);
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(10);
+  pdf.text("DATOS DE LA LABOR", margin + 4, y + 5.5);
+
+  y += 15;
+
+  pdf.setFontSize(9);
+
+  const drawDataRow = (
+    label: string,
+    value: string,
+    rowY: number
+  ) => {
+    pdf.setFont("helvetica", "bold");
+    pdf.text(label, margin + 4, rowY);
+
+    pdf.setFont("helvetica", "normal");
+    pdf.text(value, margin + 55, rowY);
+  };
+
+  const modoTexto =
     mode === "avance"
       ? "AVANCE"
       : mode === "malla"
         ? "MALLA"
         : "RESANE";
 
-  let y = 18;
+  drawDataRow("Modo", modoTexto, y);
+  y += 7;
 
-  const addHeader = () => {
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(18);
-    pdf.text("UM CHUNGAR", margin, y);
+  drawDataRow("Altura (H)", `${fmtPDF(Number(h))} m`, y);
+  y += 7;
 
-    y += 8;
-
-    pdf.setFontSize(13);
-    pdf.text("CÁLCULO VOLUMEN DE SHOTCRETE", margin, y);
-
+  if (mode !== "resane") {
+    drawDataRow("Ancho (A)", `${fmtPDF(Number(a))} m`, y);
     y += 7;
+  }
 
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(9);
-    pdf.text(`Fecha: ${date}`, margin, y);
+  drawDataRow("Avance (L)", `${fmtPDF(Number(l))} m`, y);
+  y += 7;
 
-    y += 10;
+  if (mode === "avance") {
+    drawDataRow("Espesor", `${espesor}"`, y);
+    y += 7;
+  }
 
-    pdf.setDrawColor(180, 180, 180);
-    pdf.line(margin, y, pageWidth - margin, y);
+  // Línea separadora
+  y += 3;
 
-    y += 8;
-  };
+  pdf.setDrawColor(190, 190, 190);
+  pdf.line(margin, y, pageWidth - margin, y);
 
-  const addTextLine = (
-    label: string,
-    value: string,
-    unit = ""
-  ) => {
+  // ─────────────────────────────────────────────
+  // RESULTADOS
+  // ─────────────────────────────────────────────
+
+  y += 10;
+
+  pdf.setFillColor(235, 235, 235);
+  pdf.rect(margin, y, contentWidth, 8, "F");
+
+  pdf.setTextColor(35, 35, 35);
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(10);
+  pdf.text("RESULTADOS", margin + 4, y + 5.5);
+
+  y += 14;
+
+  // AVANCE
+  if (mode === "avance") {
+    const colWidth = contentWidth / 3;
+
+    pdf.setFontSize(8);
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(10);
-    pdf.text(label, margin, y);
 
-    pdf.setFont("helvetica", "normal");
-    pdf.text(`${value}${unit}`, margin + 45, y);
+    pdf.text("PERÍMETRO", margin + 2, y);
+    pdf.text("ÁREA", margin + colWidth + 2, y);
+    pdf.text(
+      "V. CONTRATO",
+      margin + colWidth * 2 + 2,
+      y
+    );
 
     y += 6;
-  };
 
-  const addSection = (title: string) => {
-    y += 3;
-
-    pdf.setFont("helvetica", "bold");
     pdf.setFontSize(11);
-    pdf.text(title, margin, y);
+    pdf.setFont("helvetica", "bold");
 
-    y += 7;
-  };
+    pdf.text(
+      `${fmtPDF(shown.P)} m`,
+      margin + 2,
+      y
+    );
 
-  addHeader();
+    pdf.text(
+      `${fmtPDF(shown.area)} m²`,
+      margin + colWidth + 2,
+      y
+    );
 
-  // Datos generales
-  addSection("DATOS GENERALES");
+    pdf.text(
+      `${fmtPDF(shown.vContract ?? 0)} m³`,
+      margin + colWidth * 2 + 2,
+      y
+    );
 
-  addTextLine("Nivel:", nivel || "No especificado");
-  addTextLine("Labor:", labor || "No especificada");
-  addTextLine("Modo:", modeLabel);
+    y += 14;
 
-  // Mediciones
-  addSection("MEDICIONES");
+    // SACRIFICIO 1"
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(margin, y, contentWidth, 7, "F");
 
-  addTextLine("Altura H:", `${average(h).toFixed(2)}`, " m");
+    pdf.setFontSize(9);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("SACRIFICIO 1\"", margin + 3, y + 5);
 
-  if (mode === "avance" || mode === "malla") {
-    addTextLine("Ancho A:", `${average(a).toFixed(2)}`, " m");
+    y += 13;
+
+    const half = contentWidth / 2;
+
+    pdf.setFontSize(8);
+    pdf.text("SH", margin + 4, y);
+    pdf.text("M³ LABOR", margin + half + 4, y);
+
+    y += 6;
+
+    pdf.setFontSize(11);
+
+    pdf.text(
+      `${fmtPDF(shown.sh1 ?? 0)} m³`,
+      margin + 4,
+      y
+    );
+
+    pdf.text(
+      `${fmtPDF(shown.vReal1 ?? 0)} m³`,
+      margin + half + 4,
+      y
+    );
+
+    y += 13;
+
+    // SACRIFICIO 2"
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(margin, y, contentWidth, 7, "F");
+
+    pdf.setFontSize(9);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("SACRIFICIO 2\"", margin + 3, y + 5);
+
+    y += 13;
+
+    pdf.setFontSize(8);
+    pdf.text("SH", margin + 4, y);
+    pdf.text("M³ LABOR", margin + half + 4, y);
+
+    y += 6;
+
+    pdf.setFontSize(11);
+
+    pdf.text(
+      `${fmtPDF(shown.sh2 ?? 0)} m³`,
+      margin + 4,
+      y
+    );
+
+    pdf.text(
+      `${fmtPDF(shown.vReal2 ?? 0)} m³`,
+      margin + half + 4,
+      y
+    );
+
+    y += 15;
+
+    // CALIBRADORES
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(margin, y, contentWidth, 7, "F");
+
+    pdf.setFontSize(9);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("CALIBRADORES", margin + 3, y + 5);
+
+    y += 13;
+
+    pdf.setFontSize(11);
+    pdf.text(`${shown.calib ?? 0} und`, margin + 4, y);
   }
 
-  addTextLine("Avance L:", `${average(l).toFixed(2)}`, " m");
-
-  if (mode === "avance") {
-    addTextLine("Espesor:", `${espesor}`, '"');
-  }
-
-  // Resultados
-  addSection("RESULTADOS");
-
-  addTextLine("Perímetro:", fmt2(shown.P), " m");
-  addTextLine("Área:", fmt2(shown.area), " m²");
-
-  if (mode === "avance") {
-    addTextLine(
-      "Volumen contractual:",
-      fmt(shown.vContract ?? 0),
-      " m³"
-    );
-
-    addTextLine(
-      'SH sacrificio 1":',
-      fmt(shown.sh1 ?? 0),
-      " m³"
-    );
-
-    addTextLine(
-      'M³ Labor 1":',
-      fmt(shown.vReal1 ?? 0),
-      " m³"
-    );
-
-    addTextLine(
-      'SH sacrificio 2":',
-      fmt(shown.sh2 ?? 0),
-      " m³"
-    );
-
-    addTextLine(
-      'M³ Labor 2":',
-      fmt(shown.vReal2 ?? 0),
-      " m³"
-    );
-
-    addTextLine(
-      "Calibradores:",
-      `${shown.calib}`,
-      " und"
-    );
-  }
-
+  // MALLA
   if (mode === "malla") {
-    addTextLine(
-      "Volumen de malla:",
-      fmt(shown.vMalla ?? 0, 2),
-      " m³"
+    pdf.setFontSize(8);
+    pdf.setFont("helvetica", "bold");
+
+    pdf.text("PERÍMETRO", margin + 2, y);
+    pdf.text("ÁREA", margin + contentWidth / 2 + 2, y);
+
+    y += 6;
+
+    pdf.setFontSize(11);
+
+    pdf.text(
+      `${fmtPDF(shown.P)} m`,
+      margin + 2,
+      y
+    );
+
+    pdf.text(
+      `${fmtPDF(shown.area)} m²`,
+      margin + contentWidth / 2 + 2,
+      y
+    );
+
+    y += 14;
+
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(margin, y, contentWidth, 7, "F");
+
+    pdf.setFontSize(9);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("VOLUMEN DE MALLA", margin + 3, y + 5);
+
+    y += 13;
+
+    pdf.setFontSize(13);
+    pdf.text(
+      `${fmtPDF(shown.vMalla ?? 0)} m³`,
+      margin + 4,
+      y
     );
   }
 
+  // RESANE
   if (mode === "resane") {
-    addTextLine(
-      "Volumen de resane:",
-      fmt2(shown.vResane ?? 0),
-      " m³"
+    pdf.setFontSize(8);
+    pdf.setFont("helvetica", "bold");
+
+    pdf.text("ÁREA", margin + 2, y);
+    pdf.text(
+      "VOLUMEN DE RESANE",
+      margin + contentWidth / 2 + 2,
+      y
     );
 
-    addTextLine(
-      "Calibradores:",
-      `${shown.calib}`,
-      " und"
+    y += 6;
+
+    pdf.setFontSize(11);
+
+    pdf.text(
+      `${fmtPDF(shown.area)} m²`,
+      margin + 2,
+      y
     );
+
+    pdf.text(
+      `${fmtPDF(shown.vResane ?? 0)} m³`,
+      margin + contentWidth / 2 + 2,
+      y
+    );
+
+    y += 14;
+
+    pdf.setFillColor(245, 245, 245);
+    pdf.rect(margin, y, contentWidth, 7, "F");
+
+    pdf.setFontSize(9);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("CALIBRADORES", margin + 3, y + 5);
+
+    y += 13;
+
+    pdf.setFontSize(11);
+    pdf.text(`${shown.calib ?? 0} und`, margin + 4, y);
   }
 
-  // Verificación
-  addSection("VERIFICACIÓN");
+  // ─────────────────────────────────────────────
+  // FOTOS
+  // ─────────────────────────────────────────────
 
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(9);
-
-  if (mode === "avance") {
-    pdf.text(
-      `V_base = ${fmt(shown.vBase ?? 0)} m³`,
-      margin,
-      y
-    );
-    y += 5;
-
-    pdf.text(
-      `Contrato = V_base + ${SOBREESPESOR_CONTRACTUAL.toFixed(2)} m³`,
-      margin,
-      y
-    );
-    y += 5;
-
-    pdf.text(
-      `SH 1" = ${fmt(shown.sh1 ?? 0)} m³`,
-      margin,
-      y
-    );
-    y += 5;
-
-    pdf.text(
-      `SH 2" = ${fmt(shown.sh2 ?? 0)} m³`,
-      margin,
-      y
-    );
-    y += 7;
-  }
-
-  if (mode === "malla") {
-    pdf.text(
-      `Volumen de malla = Área / ${MALLA_RENDIMIENTO}`,
-      margin,
-      y
-    );
-    y += 7;
-  }
-
-  if (mode === "resane") {
-    pdf.text(
-      `Volumen de resane = Área / ${RESANE_RENDIMIENTO}`,
-      margin,
-      y
-    );
-    y += 7;
-  }
-
-  // Fotografías
   if (photos.length > 0) {
     pdf.addPage();
-    y = 18;
 
-    addSection("EVIDENCIA FOTOGRÁFICA");
+    const drawPhotoHeader = () => {
+      pdf.setFillColor(35, 35, 35);
+      pdf.rect(0, 0, pageWidth, 24, "F");
 
-    const photoWidth = 85;
-    const photoHeight = 60;
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(13);
+      pdf.text("EVIDENCIA FOTOGRÁFICA", margin, 15);
+    };
+
+    drawPhotoHeader();
+
+    const photoWidth = 82;
+    const photoHeight = 58;
     const gap = 10;
+    const startY = 34;
+    const rowHeight = 70;
 
     photos.forEach((photo, index) => {
-      const column = index % 2;
-      const row = Math.floor(index / 2);
+      const position = index % 4;
+
+      if (index > 0 && index % 4 === 0) {
+        pdf.addPage();
+        drawPhotoHeader();
+      }
+
+      const column = position % 2;
+      const row = Math.floor(position / 2);
 
       const x =
         margin + column * (photoWidth + gap);
 
       const photoY =
-        y + row * (photoHeight + 15);
+        startY + row * rowHeight;
 
-      if (photoY + photoHeight + 10 > pageHeight - margin) {
-        pdf.addPage();
-        y = 18;
-
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(11);
-        pdf.text(
-          "EVIDENCIA FOTOGRÁFICA",
-          margin,
-          y
-        );
-
-        y += 8;
-
-        const newRow = Math.floor(
-          index / 2
-        );
-
-        const adjustedY =
-          y + (newRow % 4) * (photoHeight + 15);
-
-        pdf.addImage(
-          photo,
-          "JPEG",
-          x,
-          adjustedY,
-          photoWidth,
-          photoHeight
-        );
-
-        pdf.setFontSize(8);
-        pdf.text(
-          `Foto ${index + 1}`,
-          x,
-          adjustedY + photoHeight + 5
-        );
-
-        return;
-      }
-
-      pdf.addImage(
-        photo,
-        "JPEG",
+      pdf.setDrawColor(190, 190, 190);
+      pdf.rect(
         x,
         photoY,
         photoWidth,
         photoHeight
       );
 
-      pdf.setFont("helvetica", "normal");
+      try {
+        const imageFormat = photo.startsWith("data:image/png")
+          ? "PNG"
+          : "JPEG";
+
+        pdf.addImage(
+          photo,
+          imageFormat,
+          x,
+          photoY,
+          photoWidth,
+          photoHeight
+        );
+      } catch {
+        pdf.setFontSize(9);
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(
+          `No se pudo cargar la foto ${index + 1}`,
+          x + 8,
+          photoY + photoHeight / 2
+        );
+      }
+
+      pdf.setFillColor(35, 35, 35);
+      pdf.rect(
+        x,
+        photoY + photoHeight - 7,
+        photoWidth,
+        7,
+        "F"
+      );
+
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont("helvetica", "bold");
       pdf.setFontSize(8);
       pdf.text(
-        `Foto ${index + 1}`,
-        x,
-        photoY + photoHeight + 5
+        `FOTO ${index + 1}`,
+        x + photoWidth / 2,
+        photoY + photoHeight - 2.5,
+        { align: "center" }
       );
     });
   }
 
-  // Pie de página
+  // ─────────────────────────────────────────────
+  // PIE DE PÁGINA
+  // ─────────────────────────────────────────────
+
   const totalPages = pdf.getNumberOfPages();
 
   for (let page = 1; page <= totalPages; page++) {
     pdf.setPage(page);
 
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(8);
+    pdf.setDrawColor(200, 200, 200);
+    pdf.line(
+      margin,
+      pageHeight - 13,
+      pageWidth - margin,
+      pageHeight - 13
+    );
 
-    pdf.setTextColor(100, 100, 100);
+    pdf.setTextColor(90, 90, 90);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(7.5);
 
     pdf.text(
-      `UM CHUNGAR — Cálculo volumen de Shotcrete`,
+      "UM CHUNGAR — Cálculo volumen de Shotcrete",
       margin,
-      pageHeight - 8
+      pageHeight - 7
     );
 
     pdf.text(
       `Página ${page} de ${totalPages}`,
-      pageWidth - margin - 25,
-      pageHeight - 8
+      pageWidth - margin,
+      pageHeight - 7,
+      { align: "right" }
     );
-
-    pdf.setTextColor(0, 0, 0);
   }
-
-  const safeLabor =
-    (labor || "SinLabor")
-      .replace(/[^a-zA-Z0-9_-]/g, "_");
-
-  const fileName =
-    `Reporte_Shotcrete_${safeLabor}_${date.replace(/\//g, "-")}.pdf`;
 
   pdf.save(fileName);
 
