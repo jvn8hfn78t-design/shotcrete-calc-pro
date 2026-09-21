@@ -125,7 +125,6 @@ export function ShotcreteCalculator() {
   const [h, setH] = useState<string[]>([""]);
 const [a, setA] = useState<string[]>([""]);
 const [l, setL] = useState<string[]>([""]);
-  const [perimetro, setPerimetro] = useState("12");
   const [copied, setCopied] = useState(false);
 const [calculated, setCalculated] = useState(false);
 
@@ -147,13 +146,10 @@ const [calculated, setCalculated] = useState(false);
         const error = fieldError("a", value);
         if (error) list.push(`Ancho ${index + 1}: ${error}`);
       });
-    } else {
-      const eP = fieldError("p", perimetro);
-      if (eP) list.push(eP);
     }
 
     return list;
-  }, [mode, h, a, l, perimetro]);
+  }, [mode, h, a, l]);
 
   const inputsComplete =
     mode === "avance"
@@ -214,7 +210,7 @@ const filas = H < 1.9 ? 1 : Math.floor(H);
 const calib = H <= 0 || L <= 0 ? 0 : filas * Math.ceil(Math.max(L - 1, 0));
 const P = 2 * H;
 return { P, area, vResane, calib, filas };
-  }, [mode, h, a, l, perimetro]);
+  }, [mode, h, a, l]);
 
   const shown = calculated && valid ? r : null;
 
@@ -246,7 +242,6 @@ const reset = () => {
   setH([""]);
   setA([""]);
   setL([""]);
-  setPerimetro("12");
   setCalculated(false);
   toast.success("Campos limpiados");
 };
@@ -267,7 +262,7 @@ const reset = () => {
           ]
         : [
             "REPORTE SHOTCRETE — MODO RESANE",
-            `H: ${h} m | L: ${l} m | P: ${perimetro || 12} m`,
+            `H: ${h} m | L: ${l} m`,
             `Área: ${fmt2(shown.area)} m²`,
             `Volumen de resane: ${fmt2(shown.vResane ?? 0)} m³`,
             `Calibradores: ${shown.calib} und`,
