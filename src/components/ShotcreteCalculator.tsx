@@ -109,6 +109,7 @@ function ResultCard({
       <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
         {label}
       </p>
+
       <p className="mt-2 font-display text-3xl font-bold tabular-nums leading-none sm:text-5xl">
         <span className={highlight ? "text-primary" : "text-foreground"}>
           {value}
