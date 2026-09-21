@@ -113,7 +113,6 @@ export function ShotcreteCalculator() {
   const [a, setA] = useState("");
   const [l, setL] = useState("");
   const [perimetro, setPerimetro] = useState("12");
-  const [fc, setFc] = useState(String(FC_DEFAULT));
   const [copied, setCopied] = useState(false);
 const [calculated, setCalculated] = useState(false);
 
