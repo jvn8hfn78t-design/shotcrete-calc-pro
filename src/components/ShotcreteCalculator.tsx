@@ -115,6 +115,7 @@ export function ShotcreteCalculator() {
   const [perimetro, setPerimetro] = useState("12");
   const [fc, setFc] = useState(String(FC_DEFAULT));
   const [copied, setCopied] = useState(false);
+const [calculated, setCalculated] = useState(false);
 
   const errors = useMemo(() => {
     const list: string[] = [];
@@ -182,16 +183,25 @@ const vReal2 = vBase + sh2;
     return { P: parse(perimetro), area, vResane, calib, filas };
   }, [mode, h, a, l, perimetro, fc]);
 
-  const shown = valid ? r : null;
+  const shown = calculated && valid ? r : null;
 
-  const reset = () => {
-    setH("");
-    setA("");
-    setL("");
-    setPerimetro("12");
-    setFc(String(FC_DEFAULT));
-    toast.success("Campos limpiados");
-  };
+  const calculate = () => {
+  if (!valid) {
+    toast.error("Ingresa valores válidos para calcular");
+    return;
+  }
+  setCalculated(true);
+};
+
+const reset = () => {
+  setH("");
+  setA("");
+  setL("");
+  setPerimetro("12");
+  setFc(String(FC_DEFAULT));
+  setCalculated(false);
+  toast.success("Campos limpiados");
+};
 
   const copyReport = async () => {
     if (!shown) return;
@@ -275,14 +285,21 @@ const vReal2 = vBase + sh2;
         </div>
       )}
 
-      <div className="px-4 pb-4 pt-2 sm:px-6 sm:pb-6">
-        <button
-          onClick={reset}
-          className="flex h-14 w-full items-center justify-center gap-2 rounded-lg border-2 border-input bg-transparent font-bold uppercase tracking-wide text-muted-foreground transition-colors hover:border-destructive hover:text-destructive sm:w-auto sm:px-8"
-        >
-          <RotateCcw className="size-5" /> Limpiar
-        </button>
-      </div>
+      <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
+  <button
+    onClick={calculate}
+    className="flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary font-bold uppercase tracking-wide text-primary-foreground transition-colors hover:brightness-110 sm:w-auto sm:px-8"
+  >
+    CALCULAR
+  </button>
+
+  <button
+    onClick={reset}
+    className="flex h-14 w-full items-center justify-center gap-2 rounded-lg border-2 border-input bg-transparent font-bold uppercase tracking-wide text-muted-foreground transition-colors hover:border-destructive hover:text-destructive sm:w-auto sm:px-8"
+  >
+    <RotateCcw className="size-5" /> LIMPIAR
+  </button>
+</div>
 
       {/* Results */}
       <div className="border-t-2 border-border bg-background/60 px-4 py-6 sm:px-6">
