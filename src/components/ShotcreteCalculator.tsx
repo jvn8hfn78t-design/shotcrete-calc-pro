@@ -318,10 +318,11 @@ const vReal2 = vBase + sh2;
 
         {mode === "avance" && shown && (
           <p className="mt-3 text-xs text-muted-foreground">
-            Desglose: V_base = Área × {TASA_CONTRACTUAL.toFixed(5)} = {fmt(shown.vBase ?? 0)} m³ ·
-            Contrato = V_base + {SOBREESPESOR_CONTRACTUAL.toFixed(2)} m³ · Real 1" = Área × 0.0254 ×
-            SH({SH}) · Real 2" = 2 × Real 1"
-          </p>
+  Desglose: V_base = Rb × R × e × L × P × Fc = {fmt(shown.vBase ?? 0)} m³ ·
+  Contrato = V_base + {SOBREESPESOR_CONTRACTUAL.toFixed(2)} m³ ·
+  SH 1" = {fmt(shown.sh1 ?? 0)} m³ ·
+  SH 2" = {fmt(shown.sh2 ?? 0)} m³
+</p>
         )}
 
         {/* Verification table */}
