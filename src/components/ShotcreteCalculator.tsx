@@ -479,7 +479,7 @@ const reset = () => {
       unit="m²"
     />
     <ResultCard
-      label="Vol. Teórico"
+      label="Vol. Contractual"
       value={fmt(shown.vContract)}
       unit="m³"
     />
