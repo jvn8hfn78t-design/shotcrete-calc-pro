@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import jsPDF from "jspdf";
 import {
   ClipboardCopy,
   RotateCcw,
@@ -300,6 +301,346 @@ const reset = () => {
   setCalculated(false);
   setPhotos([]);
   toast.success("Campos limpiados");
+};
+
+const generatePDF = () => {
+  if (!shown) {
+    toast.error("Primero realiza el cálculo");
+    return;
+  }
+
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 15;
+
+  const today = new Date();
+
+  const date = today.toLocaleDateString("es-PE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  const modeLabel =
+    mode === "avance"
+      ? "AVANCE"
+      : mode === "malla"
+        ? "MALLA"
+        : "RESANE";
+
+  let y = 18;
+
+  const addHeader = () => {
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(18);
+    pdf.text("UM CHUNGAR", margin, y);
+
+    y += 8;
+
+    pdf.setFontSize(13);
+    pdf.text("CÁLCULO VOLUMEN DE SHOTCRETE", margin, y);
+
+    y += 7;
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+    pdf.text(`Fecha: ${date}`, margin, y);
+
+    y += 10;
+
+    pdf.setDrawColor(180, 180, 180);
+    pdf.line(margin, y, pageWidth - margin, y);
+
+    y += 8;
+  };
+
+  const addTextLine = (
+    label: string,
+    value: string,
+    unit = ""
+  ) => {
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(10);
+    pdf.text(label, margin, y);
+
+    pdf.setFont("helvetica", "normal");
+    pdf.text(`${value}${unit}`, margin + 45, y);
+
+    y += 6;
+  };
+
+  const addSection = (title: string) => {
+    y += 3;
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(11);
+    pdf.text(title, margin, y);
+
+    y += 7;
+  };
+
+  addHeader();
+
+  // Datos generales
+  addSection("DATOS GENERALES");
+
+  addTextLine("Nivel:", nivel || "No especificado");
+  addTextLine("Labor:", labor || "No especificada");
+  addTextLine("Modo:", modeLabel);
+
+  // Mediciones
+  addSection("MEDICIONES");
+
+  addTextLine("Altura H:", `${average(h).toFixed(2)}`, " m");
+
+  if (mode === "avance" || mode === "malla") {
+    addTextLine("Ancho A:", `${average(a).toFixed(2)}`, " m");
+  }
+
+  addTextLine("Avance L:", `${average(l).toFixed(2)}`, " m");
+
+  if (mode === "avance") {
+    addTextLine("Espesor:", `${espesor}`, '"');
+  }
+
+  // Resultados
+  addSection("RESULTADOS");
+
+  addTextLine("Perímetro:", fmt2(shown.P), " m");
+  addTextLine("Área:", fmt2(shown.area), " m²");
+
+  if (mode === "avance") {
+    addTextLine(
+      "Volumen contractual:",
+      fmt(shown.vContract ?? 0),
+      " m³"
+    );
+
+    addTextLine(
+      'SH sacrificio 1":',
+      fmt(shown.sh1 ?? 0),
+      " m³"
+    );
+
+    addTextLine(
+      'M³ Labor 1":',
+      fmt(shown.vReal1 ?? 0),
+      " m³"
+    );
+
+    addTextLine(
+      'SH sacrificio 2":',
+      fmt(shown.sh2 ?? 0),
+      " m³"
+    );
+
+    addTextLine(
+      'M³ Labor 2":',
+      fmt(shown.vReal2 ?? 0),
+      " m³"
+    );
+
+    addTextLine(
+      "Calibradores:",
+      `${shown.calib}`,
+      " und"
+    );
+  }
+
+  if (mode === "malla") {
+    addTextLine(
+      "Volumen de malla:",
+      fmt(shown.vMalla ?? 0, 2),
+      " m³"
+    );
+  }
+
+  if (mode === "resane") {
+    addTextLine(
+      "Volumen de resane:",
+      fmt2(shown.vResane ?? 0),
+      " m³"
+    );
+
+    addTextLine(
+      "Calibradores:",
+      `${shown.calib}`,
+      " und"
+    );
+  }
+
+  // Verificación
+  addSection("VERIFICACIÓN");
+
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(9);
+
+  if (mode === "avance") {
+    pdf.text(
+      `V_base = ${fmt(shown.vBase ?? 0)} m³`,
+      margin,
+      y
+    );
+    y += 5;
+
+    pdf.text(
+      `Contrato = V_base + ${SOBREESPESOR_CONTRACTUAL.toFixed(2)} m³`,
+      margin,
+      y
+    );
+    y += 5;
+
+    pdf.text(
+      `SH 1" = ${fmt(shown.sh1 ?? 0)} m³`,
+      margin,
+      y
+    );
+    y += 5;
+
+    pdf.text(
+      `SH 2" = ${fmt(shown.sh2 ?? 0)} m³`,
+      margin,
+      y
+    );
+    y += 7;
+  }
+
+  if (mode === "malla") {
+    pdf.text(
+      `Volumen de malla = Área / ${MALLA_RENDIMIENTO}`,
+      margin,
+      y
+    );
+    y += 7;
+  }
+
+  if (mode === "resane") {
+    pdf.text(
+      `Volumen de resane = Área / ${RESANE_RENDIMIENTO}`,
+      margin,
+      y
+    );
+    y += 7;
+  }
+
+  // Fotografías
+  if (photos.length > 0) {
+    pdf.addPage();
+    y = 18;
+
+    addSection("EVIDENCIA FOTOGRÁFICA");
+
+    const photoWidth = 85;
+    const photoHeight = 60;
+    const gap = 10;
+
+    photos.forEach((photo, index) => {
+      const column = index % 2;
+      const row = Math.floor(index / 2);
+
+      const x =
+        margin + column * (photoWidth + gap);
+
+      const photoY =
+        y + row * (photoHeight + 15);
+
+      if (photoY + photoHeight + 10 > pageHeight - margin) {
+        pdf.addPage();
+        y = 18;
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(11);
+        pdf.text(
+          "EVIDENCIA FOTOGRÁFICA",
+          margin,
+          y
+        );
+
+        y += 8;
+
+        const newRow = Math.floor(
+          index / 2
+        );
+
+        const adjustedY =
+          y + (newRow % 4) * (photoHeight + 15);
+
+        pdf.addImage(
+          photo,
+          "JPEG",
+          x,
+          adjustedY,
+          photoWidth,
+          photoHeight
+        );
+
+        pdf.setFontSize(8);
+        pdf.text(
+          `Foto ${index + 1}`,
+          x,
+          adjustedY + photoHeight + 5
+        );
+
+        return;
+      }
+
+      pdf.addImage(
+        photo,
+        "JPEG",
+        x,
+        photoY,
+        photoWidth,
+        photoHeight
+      );
+
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(8);
+      pdf.text(
+        `Foto ${index + 1}`,
+        x,
+        photoY + photoHeight + 5
+      );
+    });
+  }
+
+  // Pie de página
+  const totalPages = pdf.getNumberOfPages();
+
+  for (let page = 1; page <= totalPages; page++) {
+    pdf.setPage(page);
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(8);
+
+    pdf.setTextColor(100, 100, 100);
+
+    pdf.text(
+      `UM CHUNGAR — Cálculo volumen de Shotcrete`,
+      margin,
+      pageHeight - 8
+    );
+
+    pdf.text(
+      `Página ${page} de ${totalPages}`,
+      pageWidth - margin - 25,
+      pageHeight - 8
+    );
+
+    pdf.setTextColor(0, 0, 0);
+  }
+
+  const safeLabor =
+    (labor || "SinLabor")
+      .replace(/[^a-zA-Z0-9_-]/g, "_");
+
+  const fileName =
+    `Reporte_Shotcrete_${safeLabor}_${date.replace(/\//g, "-")}.pdf`;
+
+  pdf.save(fileName);
+
+  toast.success("PDF generado correctamente");
 };
 
     const copyReport = async () => {
