@@ -83,7 +83,7 @@ function Field({ fieldKey, value, onChange }: FieldProps) {
         placeholder="0.00"
         aria-invalid={!!error}
         onChange={(e) => onChange(e.target.value)}
-        className={`h-16 w-full rounded-lg border-2 bg-secondary px-4 text-3xl font-bold tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground/40 ${
+        className={`h-12 w-full rounded-lg border-2 bg-secondary px-3 text-2xl font-bold tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground/40 ${
           error ? "border-destructive" : "border-input focus:border-primary"
         }`}
       />
@@ -1232,8 +1232,13 @@ Fecha: ${date}`;
       <div className="hazard-stripes h-3" />
 
       {/* Mode switcher */}
-      <div className="grid grid-cols-3 gap-2 p-4 sm:p-6">
-        {(["avance", "resane", "malla"] as Mode[]).map((m) => (
+<div className="px-4 pt-4 sm:px-6 sm:pt-6">
+  <p className="mb-2 text-sm font-extrabold uppercase tracking-widest text-foreground">
+    USO
+  </p>
+
+  <div className="grid grid-cols-3 gap-2">
+    {(["avance", "resane", "malla"] as Mode[]).map((m) => (
           <button
             key={m}
             onClick={() => setMode(m)}
@@ -1245,83 +1250,100 @@ Fecha: ${date}`;
           >
             {m}
           </button>
-        ))}
+                ))}
       </div>
-
-            {/* Inputs */}
-<div className="px-4 pb-2 sm:px-6">
-  <div className="grid grid-cols-2 gap-3 pt-3 pb-4">
-  <div>
-    <label className="mb-1 block text-sm font-extrabold uppercase tracking-wide text-foreground">
-      Nivel
-    </label>
-    <input
-      type="text"
-      value={nivel}
-      onChange={(e) => setNivel(e.target.value)}
-      placeholder="Ingrese nivel"
-      className="h-12 w-full rounded-lg border-2 border-input bg-secondary px-3 text-base font-semibold text-foreground outline-none focus:border-primary"
-    />
-  </div>
-
-  <div>
-    <label className="mb-1 block text-sm font-extrabold uppercase tracking-wide text-foreground">
-      Labor
-    </label>
-    <input
-      type="text"
-      value={labor}
-      onChange={(e) => setLabor(e.target.value)}
-      placeholder="Ingrese labor"
-      className="h-12 w-full rounded-lg border-2 border-input bg-secondary px-3 text-base font-semibold text-foreground outline-none focus:border-primary"
-    />
-  </div>
 </div>
+
+{/* Inputs */}
+<div className="px-4 pb-4 pt-2 sm:px-6">
+  <p className="mb-3 text-sm font-extrabold uppercase tracking-widest text-foreground">
+    DATOS DE LA LABOR
+  </p>
+
+  <div className="grid grid-cols-[0.7fr_1.3fr] gap-4 pr-2">
+    <div>
+      <label className="mb-1 block text-sm font-extrabold uppercase tracking-wide text-foreground">
+        NIVEL
+      </label>
+
+      <input
+        type="text"
+        value={nivel}
+        onChange={(e) => setNivel(e.target.value)}
+        placeholder="NV - 120"
+        className="h-12 w-full rounded-lg border-2 border-input bg-secondary px-3 text-base font-semibold text-foreground outline-none focus:border-primary"
+      />
+    </div>
+
+    <div>
+      <label className="mb-1 block text-sm font-extrabold uppercase tracking-wide text-foreground">
+        LABOR
+      </label>
+
+      <input
+        type="text"
+        value={labor}
+        onChange={(e) => setLabor(e.target.value)}
+        placeholder="RB - 074"
+        className="h-12 w-full rounded-lg border-2 border-input bg-secondary px-3 text-base font-semibold text-foreground outline-none focus:border-primary"
+      />
+    </div>
+    </div>
 </div>
-<div>
+
+<div className="px-4 pb-4 sm:px-6">
+  <p className="mb-4 text-sm font-extrabold uppercase tracking-widest text-foreground">
+    MEDICIONES
+  </p>
+
+<div className="space-y-6">
   <div className="mb-2 flex items-center justify-between">
     <span className="text-sm font-extrabold uppercase tracking-widest text-foreground">
-  ALTURA (H) <span className="text-steel">(m)</span>
-</span>
+      ALTURA (H) <span className="text-steel">(m)</span>
+    </span>
 
     <button
       type="button"
       onClick={() => addMeasurement(setH)}
-      className="flex h-8 items-center justify-center rounded-md bg-primary px-3 text-sm font-bold text-primary-foreground"
+      className="flex h-8 items-center justify-center rounded-md bg-primary px-3 text-xs font-bold uppercase text-primary-foreground"
     >
-      + Agregar medición
+      + AGREGAR
     </button>
   </div>
 
   <div className="space-y-3">
     {h.map((value, index) => (
       <div key={index}>
-        <div className="mb-1 flex items-center justify-between">
+        <div className="mb-1">
           <span className="text-xs font-bold text-muted-foreground">
             ALTURA {index + 1} (H{index + 1})
           </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="w-full max-w-xs">
+            <Field
+              fieldKey="h"
+              value={value}
+              onChange={(v) =>
+                setH((values) =>
+                  values.map((item, i) => (i === index ? v : item))
+                )
+              }
+            />
+          </div>
 
           {h.length > 1 && (
             <button
               type="button"
               onClick={() => removeMeasurement(setH, index)}
-              className="flex h-8 w-8 items-center justify-center rounded-md border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+              className="flex h-12 w-10 shrink-0 items-center justify-center rounded-lg border-2 border-input text-xl font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
               aria-label={`Eliminar H${index + 1}`}
             >
               −
             </button>
           )}
         </div>
-
-        <Field
-          fieldKey="h"
-          value={value}
-          onChange={(v) =>
-            setH((values) =>
-              values.map((item, i) => (i === index ? v : item))
-            )
-          }
-        />
       </div>
     ))}
   </div>
@@ -1330,60 +1352,63 @@ Fecha: ${date}`;
     Promedio H: {average(h).toFixed(2)} m
   </p>
 </div>
-
                 {mode === "avance" || mode === "malla" ? (
   <div>
-    <div className="mb-2 flex items-center justify-between">
-      <span className="text-sm font-extrabold uppercase tracking-widest text-foreground">
-        ANCHO (A) <span className="text-steel">(m)</span>
-      </span>
+  <div className="mb-2 flex items-center justify-between">
+    <span className="text-sm font-extrabold uppercase tracking-widest text-foreground">
+      ANCHO (A) <span className="text-steel">(m)</span>
+    </span>
 
-      <button
-        type="button"
-        onClick={() => addMeasurement(setA)}
-        className="flex h-8 items-center justify-center rounded-md bg-primary px-3 text-sm font-bold text-primary-foreground"
-      >
-        + Agregar medición
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={() => addMeasurement(setA)}
+      className="flex h-8 items-center justify-center rounded-md bg-primary px-3 text-xs font-bold uppercase text-primary-foreground"
+    >
+      + AGREGAR
+    </button>
+  </div>
 
-    <div className="space-y-3">
-      {a.map((value, index) => (
-        <div key={index}>
-          <div className="mb-1 flex items-center justify-between">
-            <span className="text-xs font-bold text-muted-foreground">
-              ANCHO {index + 1} (A{index + 1})
-            </span>
+  <div className="space-y-3">
+    {a.map((value, index) => (
+      <div key={index}>
+        <div className="mb-1">
+          <span className="text-xs font-bold text-muted-foreground">
+            ANCHO {index + 1} (A{index + 1})
+          </span>
+        </div>
 
-            {a.length > 1 && (
-              <button
-                type="button"
-                onClick={() => removeMeasurement(setA, index)}
-                className="flex h-8 w-8 items-center justify-center rounded-md border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
-                aria-label={`Eliminar A${index + 1}`}
-              >
-                −
-              </button>
-            )}
+        <div className="flex items-center gap-2">
+          <div className="w-full max-w-xs">
+            <Field
+              fieldKey="a"
+              value={value}
+              onChange={(v) =>
+                setA((values) =>
+                  values.map((item, i) => (i === index ? v : item))
+                )
+              }
+            />
           </div>
 
-          <Field
-            fieldKey="a"
-            value={value}
-            onChange={(v) =>
-              setA((values) =>
-                values.map((item, i) => (i === index ? v : item))
-              )
-            }
-          />
+          {a.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeMeasurement(setA, index)}
+              className="flex h-12 w-10 shrink-0 items-center justify-center rounded-lg border-2 border-input text-xl font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+              aria-label={`Eliminar A${index + 1}`}
+            >
+              −
+            </button>
+          )}
         </div>
-      ))}
-    </div>
-
-    <p className="mt-2 text-xs font-bold text-muted-foreground">
-      Promedio A: {average(a).toFixed(2)} m
-    </p>
+      </div>
+    ))}
   </div>
+
+  <p className="mt-2 text-xs font-bold text-muted-foreground">
+    Promedio A: {average(a).toFixed(2)} m
+  </p>
+</div>
 ) : (
   <div />
 )}
@@ -1391,47 +1416,51 @@ Fecha: ${date}`;
         <div>
   <div className="mb-2 flex items-center justify-between">
     <span className="text-sm font-extrabold uppercase tracking-widest text-foreground">
-  AVANCE (L) <span className="text-steel">(m)</span>
-</span>
+      AVANCE (L) <span className="text-steel">(m)</span>
+    </span>
 
     <button
       type="button"
       onClick={() => addMeasurement(setL)}
-      className="flex h-8 items-center justify-center rounded-md bg-primary px-3 text-sm font-bold text-primary-foreground"
+      className="flex h-8 items-center justify-center rounded-md bg-primary px-3 text-xs font-bold uppercase text-primary-foreground"
     >
-      + Agregar medición
+      + AGREGAR
     </button>
   </div>
 
   <div className="space-y-3">
     {l.map((value, index) => (
       <div key={index}>
-        <div className="mb-1 flex items-center justify-between">
+        <div className="mb-1">
           <span className="text-xs font-bold text-muted-foreground">
             AVANCE {index + 1} (L{index + 1})
           </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="w-full max-w-xs">
+            <Field
+              fieldKey="l"
+              value={value}
+              onChange={(v) =>
+                setL((values) =>
+                  values.map((item, i) => (i === index ? v : item))
+                )
+              }
+            />
+          </div>
 
           {l.length > 1 && (
             <button
               type="button"
               onClick={() => removeMeasurement(setL, index)}
-              className="flex h-8 w-8 items-center justify-center rounded-md border-2 border-input text-lg font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
+              className="flex h-12 w-10 shrink-0 items-center justify-center rounded-lg border-2 border-input text-xl font-bold text-muted-foreground hover:border-destructive hover:text-destructive"
               aria-label={`Eliminar L${index + 1}`}
             >
               −
             </button>
           )}
         </div>
-
-        <Field
-          fieldKey="l"
-          value={value}
-          onChange={(v) =>
-            setL((values) =>
-              values.map((item, i) => (i === index ? v : item))
-            )
-          }
-        />
       </div>
     ))}
   </div>
@@ -1440,39 +1469,45 @@ Fecha: ${date}`;
     Promedio L: {average(l).toFixed(2)} m
   </p>
 </div>
+</div>
 {mode === "avance" && (
-<div className="px-4 pb-4 pt-2 sm:px-6">
-  <div className="flex items-center justify-between gap-4">
-  <label className="text-sm font-extrabold uppercase tracking-widest text-foreground">
-    ESPESOR <span className="text-steel">(pulg)</span>
-  </label>
+  <div className="border-t-2 border-border px-4 pb-4 pt-5 sm:px-6">
+    <p className="mb-3 text-sm font-extrabold uppercase tracking-widest text-foreground">
+      PARÁMETRO DEL CÁLCULO
+    </p>
 
-  <input
-    type="number"
-    inputMode="decimal"
-    min="0"
-    step="0.1"
-    value={espesor}
-    onChange={(e) => setEspesor(e.target.value)}
-    className="h-12 w-24 rounded-lg border-2 border-input bg-secondary px-3 text-center text-xl font-bold tabular-nums text-foreground outline-none focus:border-primary"
-  />
-</div>
-</div>
+    <div className="flex items-center justify-between rounded-lg border-2 border-input bg-secondary px-4 py-3">
+      <label className="text-sm font-extrabold uppercase tracking-wide text-foreground">
+        ESPESOR <span className="text-steel">(pulg)</span>
+      </label>
+
+      <input
+        type="number"
+        inputMode="decimal"
+        min="0"
+        step="0.1"
+        value={espesor}
+        onChange={(e) => setEspesor(e.target.value)}
+        className="h-11 w-24 rounded-lg border-2 border-input bg-background px-3 text-center text-xl font-bold tabular-nums text-foreground outline-none focus:border-primary"
+      />
+    </div>
+  </div>
 )}
 
 <div className="flex flex-col gap-3 px-4 pb-4 pt-2 sm:flex-row sm:px-6 sm:pb-6">
   <button
     onClick={calculate}
-    className="flex h-14 w-full items-center justify-center gap-2 rounded-lg bg-primary font-bold uppercase tracking-wide text-primary-foreground transition-colors hover:brightness-110 sm:w-auto sm:px-8"
+    className="flex h-14 w-full items-center justify-center rounded-lg bg-primary font-bold uppercase tracking-wide text-primary-foreground shadow-lg transition-colors hover:brightness-110 sm:w-auto sm:px-10"
   >
     CALCULAR
   </button>
 
   <button
     onClick={reset}
-    className="flex h-14 w-full items-center justify-center gap-2 rounded-lg border-2 border-input bg-transparent font-bold uppercase tracking-wide text-muted-foreground transition-colors hover:border-destructive hover:text-destructive sm:w-auto sm:px-8"
+    className="flex h-14 w-full items-center justify-center gap-2 rounded-lg border-2 border-input bg-transparent font-bold uppercase tracking-wide text-muted-foreground transition-colors hover:border-destructive hover:text-destructive sm:w-auto sm:px-10"
   >
-    <RotateCcw className="size-5" /> LIMPIAR
+    <RotateCcw className="size-5" />
+    LIMPIAR
   </button>
 </div>
 
