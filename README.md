@@ -1,61 +1,177 @@
-# Shotcrete Calc Pro
+SHOTCRETE CALC PRO
 
-Implement the requested scope now; use internal planning and do not present another implementation plan for user approval.
+Calculadora web para estimar volúmenes de shotcrete en labores mineras.
 
-Build a modern, responsive web application and landing page for "PDR – Aplicación de Cálculo de Volúmenes de Shotcrete", designed for field supervisors and shift bosses (Supervisores y Jefes de Guardia) in mining operations, with an offline-friendly, mobile-first design.
+La aplicación permite realizar cálculos para Avance, Resane y Malla, utilizando las dimensiones ingresadas por el usuario y los parámetros establecidos para el cálculo.
 
-### 1. Landing & Context
-- Professional industrial/mining aesthetic (high contrast, clean typography, rugged feel, optimal for field conditions and tablets/smartphones).
-- Product overview explaining the purpose: instant shotcrete volume & gauge pin (calibradores) calculations in underground works without login or internet connection.
-- Direct prominent access to the calculator tool.
+Funcionalidades
 
-### 2. Core Calculator Tool
-- Fast mode switcher: **Avance** and **Resane**.
-- Clean, large touch-friendly inputs with units (metros).
-- Real-time automatic calculation upon entering values.
-- Reset / clear inputs option and quick "Copiar reporte / resultados" button.
+Avance
 
-### 3. Formulas & Logic:
-- **Modo Avance**:
-  - Inputs: Altura (H), Ancho (A), Avance (L).
-  - Perímetro: P = 2H + A
-  - Área: P × L
-  - Volumen contractual: V_base + 0.20
-  - Volumen real: cálculo para 1” y 2” con factor de sacrificio SH.
-    *(Verificar que con los datos del ejemplo P = 12m, Área = 48m² los resultados correspondan a: Contrato: 1.600 m³, Real 1”: 1.779 m³, Real 2”: 3.558 m³).*
-  - Calibradores: SI(H > 4.2; ((H - 1) × 2) × 2; (REDONDEAR.MAS((P × Fc) - 1) × 2)).
-- **Modo Resane**:
-  - Inputs: Altura (H), Avance (L), Perímetro (por defecto 12 m).
-  - Área: H × L
-  - Volumen de resane: Área / 11.5
-  - Calibradores: SI(H < 1.9; 1; REDONDEAR.MENOS(H; 0)) × (REDONDEAR.MAS(L - 1; 0)).
-    *(Ejemplo: H y L tales que Área = 26 m² -> Volumen: 2.26 m³, Calibradores: 18).*
+Permite ingresar:
 
-### 4. Results Screen
-- High-visibility cards displaying:
-  - Perímetro (m)
-  - Área (m²)
-  - Volumen de Shotcrete contractual y real (1” y 2”) en Avance, o volumen de resane en Resane
-  - Cantidad de calibradores
-- Table summary for quick verification matching the prompt's output format.
+* Altura (H)
+* Ancho (A)
+* Avance (L)
+* Espesor de shotcrete
 
-This project was built with [Lovable](https://lovable.dev).
+Se pueden agregar varias mediciones de H, A y L. Cuando existen varias mediciones, la aplicación utiliza el promedio de los valores ingresados.
 
-## Build with Lovable
+El cálculo muestra:
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/1fb0d836-a0ae-454a-adc5-5eb5e7025236).
+* Perímetro
+* Área
+* Volumen base
+* Volumen contractual
+* SH Sacrificio 1”
+* M³ Labor 1”
+* SH Sacrificio 2”
+* M³ Labor 2”
+* Calibradores
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+El espesor seleccionado se convierte automáticamente de pulgadas a metros para realizar los cálculos.
 
-## Development
+Resane
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Permite ingresar:
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+* Altura (H)
+* Avance (L)
+
+Calcula:
+
+* Perímetro
+* Área
+* Volumen de resane
+* Calibradores
+
+El rendimiento utilizado para el cálculo de resane es:
+
+11.5 m²/m³
+
+Malla
+
+Permite ingresar:
+
+* Altura (H)
+* Ancho (A)
+* Avance (L)
+
+Calcula:
+
+* Perímetro
+* Área
+* Volumen de malla
+
+El rendimiento utilizado es:
+
+21 m²/m³
+
+Parámetros de cálculo
+
+Avance
+
+Los parámetros utilizados son:
+
+* Rebote (Rb): 1.10
+* Rugosidad (R): 1.16
+* Factor de ajuste/revestimiento (FARC): 0.90
+* Sobreespesor contractual: 0.20 m³
+
+Volumen base
+
+El volumen base se calcula mediante:
+
+V_base = Rb × R × espesor × L × P × FARC
+
+donde el espesor ingresado en pulgadas se convierte previamente a metros.
+
+Volumen contractual
+
+V_contrato = V_base + 0.20
+
+Sacrificio de 1”
+
+SH_1 = longitudSacrificio × Rb × R × FARC × 0.0254
+
+Sacrificio de 2”
+
+SH_2 = longitudSacrificio × Rb × R × FARC × 0.0508
+
+La longitud utilizada para el sacrificio es:
+
+longitudSacrificio = 2 × max(H - 1.5, 0) + 2 × A
+
+Los volúmenes de labor son:
+
+M³ Labor 1" = V_base + SH_1
+
+M³ Labor 2" = V_base + SH_2
+
+Flujo de cálculo
+
+1. Seleccionar el modo de trabajo.
+2. Ingresar las dimensiones.
+3. En Avance, seleccionar el espesor requerido.
+4. Presionar CALCULAR.
+5. Revisar los resultados.
+6. Opcionalmente copiar el reporte o generar el PDF.
+7. Utilizar LIMPIAR para borrar los datos manteniendo el modo seleccionado.
+
+Los resultados se invalidan cuando se modifica una entrada de cálculo y deben volver a calcularse mediante el botón CALCULAR.
+
+Reportes
+
+La aplicación permite:
+
+* Copiar el reporte de cálculo.
+* Generar un PDF.
+* Compartir el PDF cuando el dispositivo/navegador lo permite.
+* Adjuntar fotografías como evidencia al reporte PDF.
+
+Las fotografías se utilizan como evidencia temporal para la generación del PDF.
+
+Validación de datos
+
+La aplicación valida los valores ingresados antes de realizar el cálculo.
+
+Los campos vacíos de mediciones adicionales son ignorados y el promedio se obtiene únicamente con los valores positivos ingresados.
+
+Tecnologías
+
+* React
+* TypeScript
+* Vite
+* TanStack Router
+* Tailwind CSS
+* jsPDF
+* Sonner
+* Lucide React
+
+Desarrollo local
+
+Instalar dependencias:
+
+npm install
+
+Ejecutar en desarrollo:
+
 npm run dev
-```
+
+Generar la versión de producción:
+
+npm run build
+
+Previsualizar la versión de producción:
+
+npm run preview
+
+Ejecutar el lint:
+
+npm run lint
+
+Estado del proyecto
+
+El proyecto se encuentra en desarrollo y está orientado al cálculo de volúmenes de shotcrete para trabajos mineros.
+
+Las fórmulas y parámetros deben mantenerse de acuerdo con los criterios y condiciones establecidos para el cálculo utilizado en operación.
