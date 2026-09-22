@@ -330,12 +330,25 @@ const valid = inputsComplete && errors.length === 0 && espesorValido;
 
   const shown = calculated && valid ? result : null;
 
+const photosLimitReached = photos.length >= 10;
 const addPhotos = (files: FileList | null) => {
   if (!files) return;
 
   const selectedFiles = Array.from(files);
 
-selectedFiles.forEach((file) => {
+  if (photos.length >= 10) {
+    toast.error("Máximo de 10 fotografías por reporte");
+    return;
+  }
+
+  const availableSlots = 10 - photos.length;
+  const filesToAdd = selectedFiles.slice(0, availableSlots);
+
+  if (selectedFiles.length > availableSlots) {
+    toast.error(`Solo puedes agregar ${availableSlots} fotografía${availableSlots === 1 ? "" : "s"} más`);
+  }
+
+filesToAdd.forEach((file) => {
   if (!file.type.startsWith("image/")) {
     toast.error("Solo se permiten archivos de imagen");
     return;
@@ -1171,79 +1184,103 @@ if (mode === "resane") {
 
     drawPhotoHeader();
 
-    const photoWidth = 82;
-    const photoHeight = 58;
-    const gap = 10;
-    const startY = 34;
-    const rowHeight = 70;
+    const maxPhotoWidth = contentWidth;
+const maxPhotoHeight = 108;
 
-    photos.forEach((photo, index) => {
-      const position = index % 4;
+const photoGap = 10;
+const startY = 34;
+const rowHeight = maxPhotoHeight + photoGap + 8;
 
-      if (index > 0 && index % 4 === 0) {
-        pdf.addPage();
-        drawPhotoHeader();
-      }
+photos.forEach((photo, index) => {
+  // 2 fotografías por página
+  if (index > 0 && index % 2 === 0) {
+    pdf.addPage();
+    drawPhotoHeader();
+  }
 
-      const column = position % 2;
-      const row = Math.floor(position / 2);
+  const position = index % 2;
+  const photoY = startY + position * rowHeight;
 
-      const x =
-        margin + column * (photoWidth + gap);
+  try {
+    const imageFormat = photo.startsWith("data:image/png")
+      ? "PNG"
+      : "JPEG";
 
-      const photoY =
-        startY + row * rowHeight;
+    // Obtener dimensiones reales de la imagen
+    const imageProperties =
+      pdf.getImageProperties(photo);
 
-      pdf.setDrawColor(190, 190, 190);
-      pdf.rect(
-        x,
-        photoY,
-        photoWidth,
-        photoHeight
-      );
+    const imageRatio =
+      imageProperties.width /
+      imageProperties.height;
 
-      try {
-        const imageFormat = photo.startsWith("data:image/png")
-          ? "PNG"
-          : "JPEG";
+    // Tamaño inicial: máximo ancho disponible
+    let photoWidth = maxPhotoWidth;
+    let photoHeight = photoWidth / imageRatio;
 
-        pdf.addImage(
-          photo,
-          imageFormat,
-          x,
-          photoY,
-          photoWidth,
-          photoHeight
-        );
-      } catch {
-        pdf.setFontSize(9);
-        pdf.setTextColor(100, 100, 100);
-        pdf.text(
-          `No se pudo cargar la foto ${index + 1}`,
-          x + 8,
-          photoY + photoHeight / 2
-        );
-      }
+    // Reducir si supera la altura máxima
+    // manteniendo la proporción original.
+    if (photoHeight > maxPhotoHeight) {
+      photoHeight = maxPhotoHeight;
+      photoWidth = photoHeight * imageRatio;
+    }
 
-      pdf.setFillColor(35, 35, 35);
-      pdf.rect(
-        x,
-        photoY + photoHeight - 7,
-        photoWidth,
-        7,
-        "F"
-      );
+    // Centrar horizontalmente
+    const x =
+      margin +
+      (contentWidth - photoWidth) / 2;
 
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(8);
-      pdf.text(
-        `FOTO ${index + 1}`,
-        x + photoWidth / 2,
-        photoY + photoHeight - 2.5,
-        { align: "center" }
-      );
-    });
+    // Borde de la fotografía
+    pdf.setDrawColor(190, 190, 190);
+    pdf.rect(
+      x,
+      photoY,
+      photoWidth,
+      photoHeight
+    );
+
+    // Fotografía
+    pdf.addImage(
+      photo,
+      imageFormat,
+      x,
+      photoY,
+      photoWidth,
+      photoHeight
+    );
+
+    // Franja inferior
+    pdf.setFillColor(35, 35, 35);
+    pdf.rect(
+      x,
+      photoY + photoHeight - 7,
+      photoWidth,
+      7,
+      "F"
+    );
+
+    // Texto de identificación
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(8);
+
+    pdf.text(
+      `FOTO ${index + 1}`,
+      x + photoWidth / 2,
+      photoY + photoHeight - 2.5,
+      { align: "center" }
+    );
+  } catch {
+    pdf.setFontSize(9);
+    pdf.setTextColor(100, 100, 100);
+
+    pdf.text(
+      `No se pudo cargar la foto ${index + 1}`,
+      margin,
+      photoY + 20
+    );
+  }
+});
   }
 
   // ─────────────────────────────────────────────
@@ -2019,6 +2056,7 @@ Fecha: ${date}`;
         type="file"
         accept="image/*"
         capture="environment"
+        disabled={photosLimitReached}
         className="hidden"
         onChange={(e) => {
           addPhotos(e.target.files);
@@ -2035,6 +2073,7 @@ Fecha: ${date}`;
         type="file"
         accept="image/*"
         multiple
+        disabled={photosLimitReached}
         className="hidden"
         onChange={(e) => {
           addPhotos(e.target.files);
