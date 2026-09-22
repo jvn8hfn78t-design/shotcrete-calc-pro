@@ -35,6 +35,29 @@ const RANGES = {
 type Mode = "avance" | "resane" | "malla";
 type FieldKey = keyof typeof RANGES;
 
+type CalculationResult = {
+  P: number;
+  area: number;
+
+  // Avance
+  vBase?: number;
+  vContract?: number;
+  sh1?: number;
+  sh2?: number;
+  vReal1?: number;
+  vReal2?: number;
+
+  // Malla
+  vMalla?: number;
+
+  // Resane
+  vResane?: number;
+  filas?: number;
+
+  // Calibradores
+  calib?: number;
+};
+
 function parse(v: string): number {
   const n = parseFloat(v.replace(",", "."));
   return Number.isFinite(n) ? n : 0;
@@ -49,7 +72,98 @@ function average(values: string[]): number {
 
   return numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
 }
+function calculateResults(
+  mode: Mode,
+  H: number,
+  A: number,
+  L: number,
+  espesorNumero: number
+): CalculationResult {
+  if (mode === "avance") {
+    const P = 2 * H + A;
+    const area = P * L;
+    const espesorM = espesorNumero * PULGADA_A_METROS;
 
+    const vBase =
+      R_REBOTE *
+      R_RUGOSIDAD *
+      espesorM *
+      L *
+      P *
+      FARC_DEFAULT;
+
+    const vContract =
+      area > 0 ? vBase + SOBREESPESOR_CONTRACTUAL : 0;
+
+    const longitudSacrificio =
+      2 * Math.max(H - 1.5, 0) + 2 * A;
+
+    const sh1 =
+      longitudSacrificio *
+      R_REBOTE *
+      R_RUGOSIDAD *
+      FARC_DEFAULT *
+      ESPESOR_SH_1_M;
+
+    const sh2 =
+      longitudSacrificio *
+      R_REBOTE *
+      R_RUGOSIDAD *
+      FARC_DEFAULT *
+      ESPESOR_SH_2_M;
+
+    const vReal1 = vBase + sh1;
+    const vReal2 = vBase + sh2;
+
+    const calib =
+      H <= 0
+        ? 0
+        : H > 4.2
+          ? Math.round((H - 1) * 2 * 2)
+          : Math.ceil(P * FARC_DEFAULT - 1) * 2;
+
+    return {
+      P,
+      area,
+      vBase,
+      vContract,
+      sh1,
+      sh2,
+      vReal1,
+      vReal2,
+      calib,
+    };
+  }
+
+  if (mode === "malla") {
+    const P = (2 * H + A) * FARC_DEFAULT;
+    const area = L * P;
+    const vMalla = area / MALLA_RENDIMIENTO;
+
+    return {
+      P,
+      area,
+      vMalla,
+    };
+  }
+
+  const area = H * L;
+  const vResane = area / RESANE_RENDIMIENTO;
+  const filas = H < 1.9 ? 1 : Math.floor(H);
+  const calib =
+    H <= 0 || L <= 0
+      ? 0
+      : filas * Math.ceil(Math.max(L - 1, 0));
+  const P = 2 * H;
+
+  return {
+    P,
+    area,
+    vResane,
+    calib,
+    filas,
+  };
+}
 const fmt = (n: number, d = 1) =>
   n.toLocaleString("es-PE", { minimumFractionDigits: d, maximumFractionDigits: d });
 const fmt2 = (n: number) => fmt(n, 1);
@@ -154,6 +268,7 @@ const [nivel, setNivel] = useState("");
 const [espesor, setEspesor] = useState("2");
 const [copied, setCopied] = useState(false);
 const [calculated, setCalculated] = useState(false);
+const [result, setResult] = useState<CalculationResult | null>(null);
 const [photos, setPhotos] = useState<string[]>([]);
 const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -212,72 +327,8 @@ const espesorValido =
 
 const valid = inputsComplete && errors.length === 0 && espesorValido;
 
-  const r = useMemo(() => {
-    const H = average(h);
-const A = average(a);
-const L = average(l);
-    if (mode === "avance") {
-      const P = 2 * H + A;
-      const area = P * L;
-      const espesorM = parse(espesor) * PULGADA_A_METROS;
 
-const vBase =
-  R_REBOTE *
-  R_RUGOSIDAD *
-  espesorM *
-  L *
-  P *
-  FARC_DEFAULT;
-
-const vContract = area > 0 ? vBase + SOBREESPESOR_CONTRACTUAL : 0;
-
-const longitudSacrificio =
-  2 * Math.max(H - 1.5, 0) + 2 * A;
-
-const sh1 =
-  longitudSacrificio *
-  R_REBOTE *
-  R_RUGOSIDAD *
-  FARC_DEFAULT *
-  ESPESOR_SH_1_M;
-
-const sh2 =
-  longitudSacrificio *
-  R_REBOTE *
-  R_RUGOSIDAD *
-  FARC_DEFAULT *
-  ESPESOR_SH_2_M;
-
-const vReal1 = vBase + sh1;
-const vReal2 = vBase + sh2;
-      const calib =
-  H <= 0
-    ? 0
-    : H > 4.2
-      ? Math.round((H - 1) * 2 * 2)
-      : Math.ceil(P * FARC_DEFAULT - 1) * 2;
-      return { P, area, vBase, vContract, sh1, sh2, vReal1, vReal2, calib };
-    }
-if (mode === "malla") {
-  const P = ((2 * H) + A) * FARC_DEFAULT;
-  const area = L * P;
-  const vMalla = area / MALLA_RENDIMIENTO;
-
-  return {
-    P,
-    area,
-    vMalla,
-  };
-}
-    const area = H * L;
-const vResane = area / RESANE_RENDIMIENTO;
-const filas = H < 1.9 ? 1 : Math.floor(H);
-const calib = H <= 0 || L <= 0 ? 0 : filas * Math.ceil(Math.max(L - 1, 0));
-const P = 2 * H;
-return { P, area, vResane, calib, filas };
-  }, [mode, h, a, l, espesor]);
-
-  const shown = calculated && valid ? r : null;
+  const shown = calculated && valid ? result : null;
 
 const addPhotos = (files: FileList | null) => {
   if (!files) return;
@@ -350,7 +401,21 @@ const removePhoto = (index: number) => {
     return;
   }
 
+  const H = average(h);
+  const A = average(a);
+  const L = average(l);
+
+  const calculatedResult = calculateResults(
+    mode,
+    H,
+    A,
+    L,
+    espesorNumero
+  );
+
+  setResult(calculatedResult);
   setCalculated(true);
+
   toast.success("Cálculo realizado correctamente");
 
   setTimeout(() => {
@@ -381,6 +446,7 @@ const removeMeasurement = (
 
 const invalidateCalculation = () => {
   setCalculated(false);
+  setResult(null);
 };
 
 const reset = () => {
@@ -391,6 +457,7 @@ const reset = () => {
   setNivel("");
   setEspesor("2");
   setCalculated(false);
+  setResult(null);
   setPhotos([]);
   toast.success("Campos limpiados");
 };
@@ -1432,11 +1499,11 @@ Fecha: ${date}`;
   fieldKey="h"
   value={value}
   onChange={(v) => {
-    setH((values) =>
-      values.map((item, i) => (i === index ? v : item))
-    );
-    invalidateCalculation();
-  }}
+  setH((values) =>
+    values.map((item, i) => (i === index ? v : item))
+  );
+  invalidateCalculation();
+}}
 />
           </div>
 
@@ -1490,11 +1557,11 @@ Fecha: ${date}`;
   fieldKey="a"
   value={value}
   onChange={(v) => {
-    setA((values) =>
-      values.map((item, i) => (i === index ? v : item))
-    );
-    invalidateCalculation();
-  }}
+  setA((values) =>
+    values.map((item, i) => (i === index ? v : item))
+  );
+  invalidateCalculation();
+}}
 />
           </div>
 
