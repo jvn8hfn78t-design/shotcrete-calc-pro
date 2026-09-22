@@ -1,5 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import jsPDF from "jspdf";
+import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Share } from "@capacitor/share";
 import {
   ClipboardCopy,
   RotateCcw,
@@ -1322,14 +1324,27 @@ photos.forEach((photo, index) => {
   return { pdf, fileName, date };
 };
 
-const generatePDF = () => {
+const generatePDF = async () => {
   const result = buildPDF();
 
   if (!result) return;
 
-  result.pdf.save(result.fileName);
+  try {
+    const base64 = result.pdf.output("datauristring").split(",")[1];
 
-  toast.success("PDF generado correctamente");
+    await Filesystem.writeFile({
+      path: `PDR Shotcrete/${result.fileName}`,
+      data: base64,
+      directory: Directory.Documents,
+      recursive: true,
+    });
+
+    toast.success("PDF guardado correctamente en Documentos");
+  } catch (error) {
+    console.error("Error al guardar PDF:", error);
+
+    toast.error("No se pudo guardar el PDF");
+  }
 };
 
 const sharePDF = async () => {
@@ -1339,39 +1354,43 @@ const sharePDF = async () => {
 
   const { pdf, fileName, date } = result;
 
-  const blob = pdf.output("blob");
+  try {
+    const base64 = pdf.output("datauristring").split(",")[1];
 
-  const file = new File([blob], fileName, {
-    type: "application/pdf",
-  });
+    // Guardar temporalmente el PDF en Cache para poder compartirlo
+    await Filesystem.writeFile({
+      path: fileName,
+      data: base64,
+      directory: Directory.Cache,
+    });
 
-  const shareText = `Cálculo volumen de Shotcrete
+    // Obtener la URI nativa del archivo
+    const fileUri = await Filesystem.getUri({
+      path: fileName,
+      directory: Directory.Cache,
+    });
+
+    const shareText = `Cálculo volumen de Shotcrete
 
 Nivel: ${nivel}
 Labor: ${labor}
 Fecha: ${date}`;
 
-  try {
-    if (
-      navigator.share &&
-      navigator.canShare?.({ files: [file] })
-    ) {
-      await navigator.share({
-        title: "Cálculo volumen de Shotcrete",
-        text: shareText,
-        files: [file],
-      });
+    const canShare = await Share.canShare();
 
+    if (!canShare.value) {
+      toast.error("Este dispositivo no permite compartir archivos");
       return;
     }
 
-    toast.error(
-      "Este dispositivo no permite compartir el PDF directamente"
-    );
+    await Share.share({
+      title: "Cálculo volumen de Shotcrete",
+      text: shareText,
+      files: [fileUri.uri],
+      dialogTitle: "Compartir PDF",
+    });
   } catch (error) {
-    if ((error as DOMException)?.name === "AbortError") {
-      return;
-    }
+    console.error("Error al compartir PDF:", error);
 
     toast.error("No se pudo compartir el PDF");
   }
