@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          description: "Calculadora de volúmenes de shotcrete para labores mineras.",
+          "Calculadora de volúmenes de shotcrete para labores mineras.",
       },
       { name: "theme-color", content: "#15181d" },
       { name: "mobile-web-app-capable", content: "yes" },
