@@ -54,16 +54,6 @@ jobs:
             -not -path "./.git/*" \
             -print
 
-          echo ""
-          echo "========================================"
-          echo "CARPETAS PRINCIPALES"
-          echo "========================================"
-          find . -maxdepth 3 -type d \
-            -not -path "./node_modules*" \
-            -not -path "./.git*" \
-            -not -path "./android*" \
-            | sort
-
       - name: Instalar Capacitor CLI
         run: bunx cap --version
 
@@ -80,10 +70,7 @@ jobs:
           java-version: "21"
 
       - name: Configurar Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          cmdline-tools-version: 12266719
-          accept-android-sdk-licenses: true
+        uses: android-actions/setup-android@v4
 
       - name: Compilar APK
         working-directory: android
