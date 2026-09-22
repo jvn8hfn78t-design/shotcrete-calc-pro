@@ -25,6 +25,17 @@ jobs:
       - name: Compilar aplicación web
         run: bun run build
 
+      - name: Revisar salida del build
+        run: |
+          echo "=== RAÍZ ==="
+          ls -la
+          echo "=== DIST ==="
+          ls -la dist 2>/dev/null || true
+          echo "=== OUTPUT ==="
+          ls -la .output 2>/dev/null || true
+          echo "=== INDEX.HTML ==="
+          find . -maxdepth 5 -name "index.html" -type f
+
       - name: Instalar Capacitor CLI
         run: bunx cap --version
 
