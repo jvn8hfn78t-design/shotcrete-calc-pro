@@ -96,6 +96,22 @@ jobs:
         working-directory: android
         run: ./gradlew assembleRelease
 
+      - name: Verificar keystore
+        working-directory: android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          echo "========================================"
+          echo "VERIFICANDO KEYSTORE"
+          echo "========================================"
+
+          keytool -list \
+            -keystore shotcrete-release.keystore \
+            -storepass "$KEYSTORE_PASSWORD"
+
+          echo ""
+          echo "Keystore válida."
+
       - name: Firmar APK Release
         working-directory: android
         env:
@@ -112,7 +128,10 @@ jobs:
           echo "APK encontrado:"
           echo "$UNSIGNED_APK"
 
-          BUILD_TOOLS=$(find "$ANDROID_HOME/build-tools" -maxdepth 1 -mindepth 1 -type d | sort -V | tail -n 1)
+          BUILD_TOOLS=$(find "$ANDROID_HOME/build-tools" \
+            -maxdepth 1 \
+            -mindepth 1 \
+            -type d | sort -V | tail -n 1)
 
           echo "Build Tools:"
           echo "$BUILD_TOOLS"
@@ -136,6 +155,7 @@ jobs:
           echo "========================================"
           echo "APK RELEASE FIRMADO CORRECTAMENTE"
           echo "========================================"
+
           ls -lh app-release.apk
 
       - name: Guardar APK Release
