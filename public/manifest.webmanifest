@@ -1,6 +1,6 @@
 {
-  "name": "PDR — Volúmenes de Shotcrete",
-  "short_name": "PDR Shotcrete",
+  "name": "Shotcrete Calc Batch",
+"short_name": "Shotcrete Calc Batch",
   "description": "Cálculo instantáneo de volúmenes de shotcrete y calibradores en labores subterráneas. 100% offline, sin login.",
   "start_url": "/",
   "scope": "/",
