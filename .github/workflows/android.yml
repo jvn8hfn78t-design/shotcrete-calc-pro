@@ -61,12 +61,14 @@ jobs:
         run: bunx cap add android
 
       - name: Instalar ImageMagick
-        run: sudo apt-get update && sudo apt-get install -y imagemagick
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
 
       - name: Preparar ícono nativo de Android
         run: |
           mkdir -p resources
-          magick public/icons/IMG_9962.jpeg -auto-orient PNG32:resources/icon.png
+          convert public/icons/IMG_9962.jpeg -auto-orient PNG32:resources/icon.png
           bunx @capacitor/assets generate --android
 
       - name: Sincronizar Capacitor
