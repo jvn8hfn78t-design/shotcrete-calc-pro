@@ -125,7 +125,7 @@ function Index() {
             </p>
 
             <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.25em] text-primary">
-              • 100% ONLINE •
+              • 100% OFFLINE •
             </p>
 
             <p className="mt-4 text-[10px] font-medium lowercase tracking-[0.18em] text-muted-foreground">
