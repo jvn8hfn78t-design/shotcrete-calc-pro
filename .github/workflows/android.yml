@@ -25,16 +25,44 @@ jobs:
       - name: Compilar aplicación web
         run: bun run build
 
-      - name: Revisar salida del build
+      - name: Diagnosticar salida del build
         run: |
-          echo "=== RAÍZ ==="
+          echo "========================================"
+          echo "RAÍZ DEL PROYECTO"
+          echo "========================================"
           ls -la
-          echo "=== DIST ==="
-          ls -la dist 2>/dev/null || true
-          echo "=== OUTPUT ==="
-          ls -la .output 2>/dev/null || true
-          echo "=== INDEX.HTML ==="
-          find . -maxdepth 5 -name "index.html" -type f
+
+          echo ""
+          echo "========================================"
+          echo "CARPETA DIST"
+          echo "========================================"
+          find dist -maxdepth 5 -type f 2>/dev/null || true
+
+          echo ""
+          echo "========================================"
+          echo "CARPETA OUTPUT"
+          echo "========================================"
+          find .output -maxdepth 7 -type f 2>/dev/null || true
+
+          echo ""
+          echo "========================================"
+          echo "TODOS LOS INDEX.HTML"
+          echo "========================================"
+          find . -type f -name "index.html" \
+            -not -path "./node_modules/*" \
+            -not -path "./android/*" \
+            -not -path "./.git/*" \
+            -print
+
+          echo ""
+          echo "========================================"
+          echo "CARPETAS PRINCIPALES"
+          echo "========================================"
+          find . -maxdepth 3 -type d \
+            -not -path "./node_modules*" \
+            -not -path "./.git*" \
+            -not -path "./android*" \
+            | sort
 
       - name: Instalar Capacitor CLI
         run: bunx cap --version
