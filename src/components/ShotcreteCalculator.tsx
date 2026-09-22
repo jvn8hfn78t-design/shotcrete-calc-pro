@@ -1354,9 +1354,9 @@ Fecha: ${date}`;
       `Área: ${fmt2(shown.area)} m²`,
       `Volumen contractual: ${fmt(shown.vContract ?? 0)} m³`,
       `SH Sacrificio 1": ${fmt(shown.sh1 ?? 0)} m³`,
-      `M³ Labor 1": ${fmt(shown.vReal1 ?? 0)} m³`,
+      `M³ Labor: ${fmt(shown.vReal1 ?? 0)} m³`,
       `SH Sacrificio 2": ${fmt(shown.sh2 ?? 0)} m³`,
-      `M³ Labor 2": ${fmt(shown.vReal2 ?? 0)} m³`,
+      `M³ Labor: ${fmt(shown.vReal2 ?? 0)} m³`,
       `Calibradores: ${shown.calib ?? 0} und`,
     ]
         : mode === "malla"
