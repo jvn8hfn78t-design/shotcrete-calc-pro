@@ -60,6 +60,12 @@ jobs:
       - name: Crear proyecto Android
         run: bunx cap add android
 
+      - name: Preparar ícono nativo de Android
+        run: |
+          mkdir -p resources
+          magick public/icons/IMG_9962.jpeg -auto-orient PNG32:resources/icon.png
+          bunx @capacitor/assets generate --android
+
       - name: Sincronizar Capacitor
         run: bunx cap sync android
 
