@@ -1417,6 +1417,7 @@ Fecha: ${date}`;
   setL([""]);
   setCalculated(false);
   setResult(null);
+  setPhotos([]);
 }}
             className={`h-14 rounded-lg font-display text-2xl font-bold uppercase tracking-wider transition-all ${
               mode === m
