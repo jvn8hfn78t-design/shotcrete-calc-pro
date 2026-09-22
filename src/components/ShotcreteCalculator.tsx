@@ -1416,6 +1416,7 @@ Fecha: ${date}`;
   setA([""]);
   setL([""]);
   setCalculated(false);
+  setResult(null);
 }}
             className={`h-14 rounded-lg font-display text-2xl font-bold uppercase tracking-wider transition-all ${
               mode === m
@@ -1766,7 +1767,7 @@ Fecha: ${date}`;
 />
 
     <ResultCard
-      label='M³ LABOR"'
+      label='M³ LABOR'
       value={fmt(shown.vReal2)}
       unit="m³"
       highlight
