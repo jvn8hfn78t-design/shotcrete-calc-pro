@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Calculadora offline de volúmenes de shotcrete y calibradores para supervisores y jefes de guardia en minería subterránea.",
+          description: "Calculadora de volúmenes de shotcrete para labores mineras.",
       },
       { name: "theme-color", content: "#15181d" },
       { name: "mobile-web-app-capable", content: "yes" },
@@ -108,7 +108,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <HeadContent />
       </head>
