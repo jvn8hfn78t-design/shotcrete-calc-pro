@@ -80,8 +80,9 @@ function calculateResults(
   espesorNumero: number
 ): CalculationResult {
   if (mode === "avance") {
-    const P = 2 * H + A;
-    const area = P * L;
+  const P = 2 * H + A;
+  const areaBase = P * L;
+  const area = areaBase * FARC_DEFAULT;
     const espesorM = espesorNumero * PULGADA_A_METROS;
 
     const vBase =
@@ -93,7 +94,7 @@ function calculateResults(
       FARC_DEFAULT;
 
     const vContract =
-      area > 0 ? vBase + SOBREESPESOR_CONTRACTUAL : 0;
+  areaBase > 0 ? vBase + SOBREESPESOR_CONTRACTUAL : 0;
 
     const longitudSacrificio =
       2 * Math.max(H - 1.5, 0) + 2 * A;
